@@ -3,7 +3,7 @@ namespace BudgetTracker.Models;
 public class BudgetCategory
 {
     public BudgetCategory(string generalClassification, string categoryName, string[] keywords,
-                      int optionNumber, decimal amtBudgeted, decimal searchOrder)
+                          int optionNumber, decimal amtBudgeted, decimal searchOrder)
     {
         GeneralClassification = generalClassification;
         CategoryName = categoryName;
@@ -12,7 +12,7 @@ public class BudgetCategory
         AmtBudgeted = amtBudgeted;
         SearchOrder = searchOrder;
     }
-        
+
     public string GeneralClassification { get; set; }
     public string CategoryName { get; set; }
     public string[] Keywords { get; set; }
@@ -22,8 +22,7 @@ public class BudgetCategory
         get => _optionNumber;
         set
         {
-            if (value < 0)
-                throw new ArgumentException("Option number must be a positive integer");
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, nameof(OptionNumber));
             _optionNumber = value;
         }
     }
@@ -34,13 +33,10 @@ public class BudgetCategory
         get => _amtBudgeted;
         set
         {
-            if (value < 0)
-                throw new ArgumentException("Budgeted amount must be non-negative");
+            ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AmtBudgeted));
             _amtBudgeted = Math.Round(value, 2);
         }
     }
 
     public decimal SearchOrder { get; set; }
-
-
 }
