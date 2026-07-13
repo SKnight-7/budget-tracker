@@ -39,4 +39,14 @@ public class BudgetCategory
     }
 
     public decimal SearchOrder { get; set; }
+
+    public override string ToString() =>
+        $"""
+        General Classification: {GeneralClassification}
+        Budget Category: {CategoryName}
+        Keywords: {string.Join(", ", Keywords)}
+        Option Number: {OptionNumber}
+        Amount Budgeted: {AmtBudgeted:C}
+        Search Order: {SearchOrder}
+        """;
 }
