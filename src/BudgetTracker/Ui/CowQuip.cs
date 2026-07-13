@@ -1,9 +1,20 @@
 namespace BudgetTracker.Ui;
+
+/// <summary>Where the cow stands beneath the speech bubble.</summary>
 public enum CowPosition
 {
+    /// <summary>Under the middle of the bubble.</summary>
     Centered,
+    /// <summary>Near the bubble's right edge, like the original cowsay.</summary>
     Classic
 }
+
+/// <summary>
+/// A hand-rolled cowsay for short quips: wraps a phrase in a speech bubble with an
+/// ASCII cow beneath it. Phrases are capped at 100 characters and balanced across
+/// at most two lines, a design meant to showcase one-liners; longer text would call
+/// for paragraph-style wrapping. This cow quips; it does not deliver dissertations.
+/// </summary>
 public static class CowQuip
 {
     private const string Cow = """
@@ -16,6 +27,10 @@ public static class CowQuip
     private const string DefaultPhrase = "Just sayin' hay!";
     private const int MaxSingleLine = 50;
 
+    // Searches outward from the phrase's center for the nearest occurrence of any
+    // character in the caller-supplied targets, so a two-line split lands as close
+    // to balanced as possible. Which characters make good split points is the
+    // caller's decision, not this method's.
     private static int FindSplitPoint(string phrase, char[] targets, int window = 10)
     {
         int center = phrase.Length / 2;
@@ -30,6 +45,8 @@ public static class CowQuip
         return -1;
     }
 
+    // Long phrases split into two lines, preferring a punctuation break near the
+    // center, then a space, then (for unbroken text) a hard split at the midpoint.
     private static string[] WrapPhrase(string phrase)
     {
         if (phrase.Length <= MaxSingleLine)
@@ -49,6 +66,8 @@ public static class CowQuip
         return [line1, line2];            
     }
 
+    // Pads each line of the cow so it stands at the chosen position beneath
+    // a speech bubble of the given text width.
     private static string MoveCow(int width, CowPosition position = CowPosition.Centered)
     {
         string[] cowLines = Cow.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
@@ -58,6 +77,10 @@ public static class CowQuip
         return string.Join("\n", cowLines.Select(cowLine => cowPad + cowLine));
     }
                     
+    /// <summary>Wraps a phrase in a speech bubble with the cow beneath it.</summary>
+    /// <param name="phrase">What the cow says. Null or anything over 100 characters
+    /// is replaced with the default phrase.</param>
+    /// <returns>The bubble and cow as a multi-line string.</returns>
     public static string Say(string phrase = DefaultPhrase)
     {
         if (phrase is null || phrase.Length > 100)

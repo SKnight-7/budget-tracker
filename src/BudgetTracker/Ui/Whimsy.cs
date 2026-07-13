@@ -2,6 +2,9 @@ using Figgle.Fonts;
 
 namespace BudgetTracker.Ui;
 
+/// <summary>
+/// Builds the app's greeting: a large banner title plus the cow delivering a random pun.
+/// </summary>
 public static class Whimsy
 {    
     private static readonly string[] CowPhrases = [    
@@ -22,6 +25,9 @@ public static class Whimsy
         "Our cow-laboration is legen-dairy!",
         "The moo-ment has come to explore your finances!"
     ];
+    /// <summary>Builds the greeting string.</summary>
+    /// <param name="enableWhimsy">When false, a plain one-line welcome replaces the banner and cow.</param>
+    /// <returns>The greeting, framed in blank lines and ready to print.</returns>
     public static string ApplyWhimsy(bool enableWhimsy = true)
     {
         if (!enableWhimsy) return "\n\nWelcome to the Budget Tracker\n\n";
