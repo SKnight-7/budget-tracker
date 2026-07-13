@@ -6,12 +6,13 @@ public enum CowPosition
 }
 public static class CowQuip
 {
-    private const string Cow = @"
-\   ^__^
- \  (oo)\_______
-    (__)\       )\/\
-        ||----w |
-        ||     ||";
+    private const string Cow = """
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+        """;
     private const string DefaultPhrase = "Just sayin' hay!";
     private const int MaxSingleLine = 50;
 
