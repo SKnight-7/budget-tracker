@@ -1,8 +1,8 @@
 namespace BudgetTracker.Ui;
 
 /// <summary>
-/// The console implementation of <see cref="IUserInterface"/>: writes to and reads
-/// from the terminal.
+/// The console implementation of <see cref="IUserInterface"/>: 
+/// writes to and reads from the terminal.
 /// </summary>
 public class ConsoleUi : IUserInterface
 {

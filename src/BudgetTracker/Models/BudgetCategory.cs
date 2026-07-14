@@ -14,11 +14,11 @@ public class BudgetCategory
     /// during construction too: a category can't be created with values the
     /// setters would reject.
     /// </summary>
-    public BudgetCategory(string generalClassification, string categoryName, string[] keywords,
+    public BudgetCategory(string generalClassification, string name, string[] keywords,
                           int optionNumber, decimal amtBudgeted, decimal searchOrder)
     {
         GeneralClassification = generalClassification;
-        CategoryName = categoryName;
+        Name = name;
         Keywords = keywords;
         OptionNumber = optionNumber;
         AmtBudgeted = amtBudgeted;
@@ -30,7 +30,7 @@ public class BudgetCategory
     public string GeneralClassification { get; set; }
 
     /// <summary>The specific thing being budgeted for, such as "Groceries" or "Paycheck".</summary>
-    public string CategoryName { get; set; }
+    public string Name { get; set; }
 
     /// <summary>Substrings the categorizer looks for in transaction descriptions.</summary>
     public string[] Keywords { get; set; }
@@ -70,7 +70,7 @@ public class BudgetCategory
     public override string ToString() =>
         $"""
         General Classification: {GeneralClassification}
-        Budget Category: {CategoryName}
+        Budget Category: {Name}
         Keywords: {string.Join(", ", Keywords)}
         Option Number: {OptionNumber}
         Amount Budgeted: {AmtBudgeted:C}
