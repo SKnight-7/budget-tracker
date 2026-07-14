@@ -14,7 +14,7 @@ public class BudgetCategory
     /// during construction too: a category can't be created with values the
     /// setters would reject.
     /// </summary>
-    public BudgetCategory(string generalClassification, string name, string[] keywords,
+    public BudgetCategory(string generalClassification, string name, List<string> keywords,
                           int optionNumber, decimal amtBudgeted, decimal searchOrder)
     {
         GeneralClassification = generalClassification;
@@ -33,7 +33,7 @@ public class BudgetCategory
     public string Name { get; set; }
 
     /// <summary>Substrings the categorizer looks for in transaction descriptions.</summary>
-    public string[] Keywords { get; set; }
+    public List<string> Keywords { get; set; }
 
     private int _optionNumber;
     /// <summary>The number a user types to select this category from a menu.</summary>
