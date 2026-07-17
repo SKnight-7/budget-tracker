@@ -9,6 +9,11 @@ public static class Menus
     // underlining on, and "[0m" returns all styling to normal.
     private const string StartUnderline = "\x1B[4m";
     private const string ResetStyling = "\x1B[0m";
+    // The two dials of the columned layout: every column is the same fixed width,
+    // and names wrap inside it, so no single long entry can stretch a column.
+    private const int CardWidth = 22;         // fixed content width, "NN: " prefix included
+    private const int ColumnGutter = 5;       // spaces between columns
+    private const int OptionPrefixWidth = 4;  // "NN: " — number right-aligned to 2, colon, space
 
     /// <summary>Builds a menu display: an underlined title, then options grouped by
     /// general classification and ordered by option number.</summary>
@@ -30,5 +35,104 @@ public static class Menus
         }
 
         return string.Join("\n", menuToDisplay) + "\n";
+    }
+
+    /// <summary>Builds a multi-column menu display: an underlined title, then one
+    /// card per general classification, arranged left to right in rows.</summary>
+    /// <param name="options">The menu entries to display, in any order.</param>
+    /// <param name="title">The heading shown underlined above the menu.</param>
+    /// <param name="columnCount">How many cards stand side by side per row.</param>
+    /// <returns>The formatted menu as a single string, ready to display.</returns>
+    /// <remarks>Cards appear in order of their lowest option number. Every column is
+    /// the same fixed width (CardWidth) with a fixed gutter between columns, and
+    /// option names wrap inside it onto indented continuation lines.</remarks>
+    public static string GenerateColumned(List<MenuOption> options, string title = "MENU", int columnCount = 4)
+    {
+        List<string> menuToDisplay = [$"\n\n{StartUnderline}{title}{ResetStyling}\n"];
+
+        List<List<string>> cards = [.. options
+            .OrderBy(o => o.OptionNumber)
+            .GroupBy(o => o.GeneralClassification)
+            .Select(BuildCard)];
+
+        foreach (var chunk in cards.Chunk(columnCount))
+        {
+            menuToDisplay.AddRange(StitchRow([.. chunk]));
+            menuToDisplay.Add("");
+        }
+
+        return string.Join("\n", menuToDisplay);
+    }
+
+    // Greedy word wrap: each line takes on words until the next word won't fit.
+    private static List<string> WrapWords(string text, int width)
+    {
+        if (text.Length <= width)
+            return [text];
+
+        List<string> lines = [];
+        string currentLine = "";
+
+        foreach (string word in text.Split(' '))
+        {
+            if (currentLine.Length == 0)
+                currentLine = word;
+            else if (currentLine.Length + 1 + word.Length <= width)
+                currentLine += " " + word;
+            else
+            {
+                lines.Add(currentLine);
+                currentLine = word;
+            }
+        }
+        lines.Add(currentLine);
+        return lines;
+    }
+
+    // One classification's entries as display lines: uppercased header first, then
+    // each option with its number; wrapped names continue on indented lines.
+    private static List<string> BuildCard(IGrouping<string, MenuOption> group)
+    {
+        List<string> card = [group.Key.ToUpper()];
+
+        foreach (MenuOption option in group)
+        {
+            List<string> nameLines = WrapWords(option.Label, CardWidth - OptionPrefixWidth);
+            card.Add($"{option.OptionNumber,2}: {nameLines[0]}");
+            foreach (string continuation in nameLines.Skip(1))
+                card.Add($"    {continuation}");
+        }
+        return card;
+    }
+
+    // Padding is measured from the plain text BEFORE styling is applied, so the
+    // invisible escape characters never distort the width arithmetic. Math.Max
+    // guards against a line longer than its slot (it overflows instead of crashing).
+    private static string PadCardLine(string line, int width, bool isHeader)
+    {
+        string padding = new string(' ', Math.Max(0, width - line.Length));
+        return isHeader
+            ? $"{StartUnderline}{line}{ResetStyling}{padding}"
+            : line + padding;
+    }
+
+    // Reads across the cards: line i of every card side by side, each padded to the
+    // fixed column width; cards shorter than the row's tallest contribute blank slots.
+    private static List<string> StitchRow(List<List<string>> cards)
+    {
+        List<string> stitched = [];
+        int height = cards.Max(card => card.Count);
+
+        for (int i = 0; i < height; i++)
+        {
+            string rowLine = "";
+            for (int j = 0; j < cards.Count; j++)
+            {
+                string line = i < cards[j].Count ? cards[j][i] : "";
+                rowLine += PadCardLine(line, CardWidth + ColumnGutter, isHeader: i == 0);
+            }
+            stitched.Add(rowLine.TrimEnd());
+        }
+        return stitched;
     }
 }
