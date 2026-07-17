@@ -9,22 +9,6 @@ namespace BudgetTracker.Models;
 /// </summary>
 public class BudgetCategory
 {
-    /// <summary>
-    /// The constructor assigns through the properties, so their range checks run
-    /// during construction too: a category can't be created with values the
-    /// setters would reject.
-    /// </summary>
-    public BudgetCategory(string generalClassification, string name, List<string> keywords,
-                          int optionNumber, decimal amtBudgeted, decimal searchOrder)
-    {
-        GeneralClassification = generalClassification;
-        Name = name;
-        Keywords = keywords;
-        OptionNumber = optionNumber;
-        AmtBudgeted = amtBudgeted;
-        SearchOrder = searchOrder;
-    }
-
     /// <summary>The broad grouping the category belongs to. Categories classified
     /// as "Income" count as money in; all others count as money out.</summary>
     public string GeneralClassification { get; set; }
@@ -65,6 +49,22 @@ public class BudgetCategory
     // Deliberately an unrestricted decimal (the Python original required a non-negative
     // integer) so categories can be reordered or prioritized without renumbering the list.
     public decimal SearchOrder { get; set; }
+
+    /// <summary>
+    /// The constructor assigns through the properties, so their range checks run
+    /// during construction too: a category can't be created with values the
+    /// setters would reject.
+    /// </summary>
+    public BudgetCategory(string generalClassification, string name, List<string> keywords,
+                          int optionNumber, decimal amtBudgeted, decimal searchOrder)
+    {
+        GeneralClassification = generalClassification;
+        Name = name;
+        Keywords = keywords;
+        OptionNumber = optionNumber;
+        AmtBudgeted = amtBudgeted;
+        SearchOrder = searchOrder;
+    }
 
     /// <summary>Returns every property as labeled lines, for debugging and quick prints.</summary>
     public override string ToString() =>

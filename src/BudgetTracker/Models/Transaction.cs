@@ -7,23 +7,6 @@ namespace BudgetTracker.Models;
 /// </summary>
 public class Transaction
 {
-    /// <summary>
-    /// The constructor assigns through the properties, so their checks run during
-    /// construction too: a transaction can't be created with values the setters
-    /// would reject.
-    /// </summary>
-    public Transaction(int number, DateOnly date,
-                       decimal amount, string description,
-                       string category = "Uncategorized", string sourceFile = "sample.csv")
-    {
-        Number = number;
-        Date = date;
-        Amount = amount;
-        Description = description;
-        Category = category;
-        SourceFile = sourceFile;
-    }
-
     private int _number;
     /// <summary>The transaction's position in its upload, numbered from 1. Zero is
     /// reserved for the stored-data placeholder, never a real transaction.</summary>
@@ -76,6 +59,23 @@ public class Transaction
         }
     }
 
+    /// <summary>
+    /// The constructor assigns through the properties, so their checks run during
+    /// construction too: a transaction can't be created with values the setters
+    /// would reject.
+    /// </summary>
+    public Transaction(int number, DateOnly date,
+                       decimal amount, string description,
+                       string category = "Uncategorized", string sourceFile = "sample.csv")
+    {
+        Number = number;
+        Date = date;
+        Amount = amount;
+        Description = description;
+        Category = category;
+        SourceFile = sourceFile;
+    }
+
     /// <summary>Returns every property as labeled lines, for debugging and quick prints.</summary>
     public override string ToString() =>
         $"""
@@ -86,5 +86,4 @@ public class Transaction
         Category: {Category}
         Source File: {SourceFile}
         """;
-    
 }

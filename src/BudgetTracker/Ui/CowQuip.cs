@@ -27,6 +27,25 @@ public static class CowQuip
     private const string DefaultPhrase = "Just sayin' hay!";
     private const int MaxSingleLine = 50;
 
+    /// <summary>Wraps a phrase in a speech bubble with the cow beneath it.</summary>
+    /// <param name="phrase">What the cow says. Null or anything over 100 characters
+    /// is replaced with the default phrase.</param>
+    /// <returns>The bubble and cow as a multi-line string.</returns>
+    public static string Say(string phrase = DefaultPhrase)
+    {
+        if (phrase is null || phrase.Length > 100)
+            phrase = DefaultPhrase;
+
+        string[] lines = WrapPhrase(phrase);
+        int width = lines.Max(line => line.Length);
+
+        string topBorder = " " + new string('_', width + 2);
+        string textRows = string.Join("\n", lines.Select(line => $"| {line.PadRight(width)} |"));
+        string bottomBorder = " " + new string('=', width + 2);
+
+        return $"{topBorder}\n{textRows}\n{bottomBorder}\n{MoveCow(width)}";
+    }
+
     // Searches outward from the phrase's center for the nearest occurrence of any
     // character in the caller-supplied targets, so a two-line split lands as close
     // to balanced as possible. Which characters make good split points is the
@@ -63,7 +82,7 @@ public static class CowQuip
 
         string line1 = phrase[..(splitAt + 1)].Trim();
         string line2 = phrase[(splitAt + 1)..].Trim();
-        return [line1, line2];            
+        return [line1, line2];
     }
 
     // Pads each line of the cow so it stands at the chosen position beneath
@@ -75,24 +94,5 @@ public static class CowQuip
         int offset = position == CowPosition.Classic ? bubbleWidth - 2 : bubbleWidth / 2;
         string cowPad = new string(' ', offset);
         return string.Join("\n", cowLines.Select(cowLine => cowPad + cowLine));
-    }
-                    
-    /// <summary>Wraps a phrase in a speech bubble with the cow beneath it.</summary>
-    /// <param name="phrase">What the cow says. Null or anything over 100 characters
-    /// is replaced with the default phrase.</param>
-    /// <returns>The bubble and cow as a multi-line string.</returns>
-    public static string Say(string phrase = DefaultPhrase)
-    {
-        if (phrase is null || phrase.Length > 100)
-            phrase = DefaultPhrase;
-
-        string[] lines = WrapPhrase(phrase);
-        int width = lines.Max(line => line.Length);
-               
-        string topBorder = " " + new string('_', width + 2);
-        string textRows = string.Join("\n", lines.Select(line => $"| {line.PadRight(width)} |"));
-        string bottomBorder = " " + new string('=', width + 2);
-
-        return $"{topBorder}\n{textRows}\n{bottomBorder}\n{MoveCow(width)}";
     }
 }
