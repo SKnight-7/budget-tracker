@@ -29,7 +29,9 @@ public class BudgetManager
         }
     }
 
-    /// <summary>Every budget category, fetchable by its name.</summary>
+    /// <summary>Every budget category, fetchable by its name. Each BudgetCategory
+    /// carries: GeneralClassification, Name, Keywords, OptionNumber, AmtBudgeted,
+    /// and SearchOrder — documented in full on the class itself.</summary>
     public Dictionary<string, BudgetCategory> BudgetCategories { get; set; }
 
     /// <summary>Running tally of money received, per income category.</summary>
