@@ -1,0 +1,2 @@
+transaction_num,transaction_date,amount,description,category,source_file
+0,1900-01-01,0.00,Sample,Uncategorized,sample.csv

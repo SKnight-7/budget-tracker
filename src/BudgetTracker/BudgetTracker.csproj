@@ -12,4 +12,8 @@
     <PackageReference Include="Figgle.Fonts" Version="0.6.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Storage\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
