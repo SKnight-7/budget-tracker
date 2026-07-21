@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace BudgetTracker.Parsing;
+namespace BudgetTracker.Services;
 
 /// <summary>
 /// Wraps the standard TryParse patterns in methods that return null on failure instead

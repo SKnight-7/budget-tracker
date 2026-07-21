@@ -68,4 +68,6 @@ public class BudgetManager
                 ExpensesByCategory[category.Name] = 0m;
         }
     }
+
+
 }
