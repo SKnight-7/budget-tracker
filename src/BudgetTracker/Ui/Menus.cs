@@ -5,10 +5,6 @@ namespace BudgetTracker.Ui;
 /// </summary>
 public static class Menus
 {
-    // ANSI escape codes: \x1B is the invisible ESC character, "[4m" switches
-    // underlining on, and "[0m" returns all styling to normal.
-    private const string StartUnderline = "\x1B[4m";
-    private const string ResetStyling = "\x1B[0m";
     // The two dials of the columned layout: every column is the same fixed width,
     // and names wrap inside it, so no single long entry can stretch a column.
     private const int CardWidth = 22;         // fixed content width, "NN: " prefix included
@@ -23,7 +19,7 @@ public static class Menus
     /// <remarks>Groups appear in order of their lowest option number.</remarks>
     public static string Generate(List<MenuOption> options, string title = "MENU")
     {
-        List<string> menuToDisplay = [$"\n\n{StartUnderline}{title}{ResetStyling}"];
+        List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}"];
 
         foreach (var group in options.OrderBy(o => o.OptionNumber).GroupBy(o => o.GeneralClassification))
         {
@@ -48,7 +44,7 @@ public static class Menus
     /// option names wrap inside it onto indented continuation lines.</remarks>
     public static string GenerateColumned(List<MenuOption> options, string title = "MENU", int columnCount = 4)
     {
-        List<string> menuToDisplay = [$"\n\n{StartUnderline}{title}{ResetStyling}\n"];
+        List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}\n"];
 
         List<List<string>> cards = [.. options
             .OrderBy(o => o.OptionNumber)
@@ -105,17 +101,6 @@ public static class Menus
         return card;
     }
 
-    // Padding is measured from the plain text BEFORE styling is applied, so the
-    // invisible escape characters never distort the width arithmetic. Math.Max
-    // guards against a line longer than its slot (it overflows instead of crashing).
-    private static string PadCardLine(string line, int width, bool isHeader)
-    {
-        string padding = new string(' ', Math.Max(0, width - line.Length));
-        return isHeader
-            ? $"{StartUnderline}{line}{ResetStyling}{padding}"
-            : line + padding;
-    }
-
     // Reads across the cards: line i of every card side by side, each padded to the
     // fixed column width; cards shorter than the row's tallest contribute blank slots.
     private static List<string> StitchRow(List<List<string>> cards)
@@ -129,7 +114,7 @@ public static class Menus
             for (int j = 0; j < cards.Count; j++)
             {
                 string line = i < cards[j].Count ? cards[j][i] : "";
-                rowLine += PadCardLine(line, CardWidth + ColumnGutter, isHeader: i == 0);
+                rowLine += TextLayout.PadCell(line, CardWidth + ColumnGutter, Alignment.Left, underline: i == 0);
             }
             stitched.Add(rowLine.TrimEnd());
         }
