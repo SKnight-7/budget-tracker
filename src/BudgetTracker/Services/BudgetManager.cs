@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using BudgetTracker.Data;
 using BudgetTracker.Models;
+using CsvHelper;
+using System.Globalization;
 
 namespace BudgetTracker.Services;
 
@@ -66,6 +68,39 @@ public class BudgetManager
                 IncomeByCategory[category.Name] = 0m;
             else
                 ExpensesByCategory[category.Name] = 0m;
+        }
+    }
+
+    public void SaveBudgets()
+    {
+        Directory.CreateDirectory(StoragePaths.Root);
+
+        using StreamWriter streamWriter = new(FilePath);
+        using CsvWriter csv = new(streamWriter, CultureInfo.InvariantCulture);
+
+        List<string> headers =
+        [
+            nameof(BudgetCategory.GeneralClassification),
+            nameof(BudgetCategory.Name),
+            nameof(BudgetCategory.Keywords),
+            nameof(BudgetCategory.OptionNumber),
+            nameof(BudgetCategory.AmtBudgeted),
+            nameof(BudgetCategory.SearchOrder),
+        ];
+
+        foreach (string header in headers)
+            csv.WriteField(header);
+        csv.NextRecord();
+
+        foreach (BudgetCategory category in BudgetCategories.Values)
+        {
+            csv.WriteField(category.GeneralClassification);
+            csv.WriteField(category.Name);
+            csv.WriteField(string.Join("|", category.Keywords));
+            csv.WriteField(category.OptionNumber);
+            csv.WriteField(category.AmtBudgeted.ToString("F2", CultureInfo.InvariantCulture));
+            csv.WriteField(category.SearchOrder);
+            csv.NextRecord();
         }
     }
 

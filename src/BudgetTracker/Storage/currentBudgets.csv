@@ -1,21 +1,21 @@
-general_classification,budget_category,keywords,option_num,amt_budgeted,search_order
+GeneralClassification,Name,Keywords,OptionNumber,AmtBudgeted,SearchOrder
 Income,Paycheck,payroll,1,0.00,1
 Income,Other Income,cashout,2,0.00,2
-Monthly Household Bills,Mortgage & Rent,apartments|mortgage,3,0.00,3
-Monthly Household Bills,Utilities,utility|gas|electric|water|smud|pge,4,0.00,4
-Monthly Household Bills,Phone,verizon|metropcs|mobile,5,0.00,5
-Monthly Household Bills,"Internet, Cable, Satellite",internet|comcast|xfinity|at&t|cable|satellite,6,0.00,6
+Monthly Household,Mortgage & Rent,apartments|mortgage,3,0.00,3
+Monthly Household,Utilities,utility|gas|electric|water|smud|pge,4,0.00,4
+Monthly Household,Phone,verizon|metropcs|mobile,5,0.00,5
+Monthly Household,"Internet, Cable, Satellite",internet|comcast|xfinity|at&t|cable|satellite,6,0.00,6
 Food & Dining,Groceries,safeway|kroger|aldi|publix|meijer|piggly|albertson|costco|trader joe|co-op|food|market|grocery,7,0.00,7
 Food & Dining,Eating Out,mcdonald|starbuck|peets|chipotle|subway|panera|dunkin|taco|pizza|wings|burger|steak|coffee|yogurt,8,0.00,8
 Travel & Transport,"Car (Payment, Gas, Repair, Ride Share, Tolls, Parking)",dealership|auto|uber|lyft|toll|parking|shell|chevron|exxonmobil|bp|gas,9,0.00,9
-Travel & Transport,Public Transit,transit| rt ,10,0.00,10
+Travel & Transport,Public Transit,"transit| rt ",10,0.00,10
 Travel & Transport,Trips & Travel,hotel|motel|airline,11,0.00,14
 Health & Fitness,Medical,hospital|doctor|kaiser|medical|insurance|wellness|pharm|rx,12,0.00,17
 Health & Fitness,Gym & Other Fitness,fitness|gym|pilates|dance|running,13,0.00,13
-Financial,Pay Loans & Credit Cards,bank|loan|capital one|merrick|hsbc|american express|visa|mastercard|student ln|synchrony| cc ,14,0.00,11
+Financial,Pay Loans & Credit Cards,"bank|loan|capital one|merrick|hsbc|american express|visa|mastercard|student ln|synchrony| cc ",14,0.00,11
 Shopping,Home Improvement,lowe|home|hardware,15,0.00,15
 Shopping,Other Shopping,amazon|amzn|ebay|macy|nordstrom|target|walmart|outlet|google,16,0.00,999
-Other,Self Care,spa | hair|nail|salon|barber|massage|beauty,17,0.00,17
+Other,Self Care,spa | hair|nail|salon|barber|massage|beauty,17,0.00,16
 Other,Pet Care,chewy|animal|vet|kitty|cat |dog|hound|pup,18,0.00,12
 Other,Laundry,csc,19,0.00,19
 Other,Entertainment,netflix|hulu|disney|video|spotify|audible|cinemark|amc|theater|theatre|playstation|nintendo|xbox|steam|nexus mods|game|subscription|youtube|channel|television|tv,20,0.00,20
