@@ -27,6 +27,7 @@ public class CategorizerTests
         new("Other", "Pet Care", ["animal", "vet", "dog"], 4, 0m, 12),
         new("Other", "Entertainment", ["netflix", "video"], 5, 0m, 20),
         new("Shopping", "Other Shopping", ["amazon", "outlet", "target"], 6, 0m, 999),
+        new("Travel & Transport", "Public Transit", ["transit", " rt "], 10, 0m, 10),
     ];
 
     /// <summary>A description containing a clear keyword returns the matching category.</summary>
@@ -135,5 +136,15 @@ public class CategorizerTests
         string result = Categorizer.Categorize(_categories, "amazon refund video purchase");
 
         Assert.Equal("Entertainment", result);
+    }
+
+    [Fact]
+    public void Categorize_KeywordMatch_KeywordsWithSpacesAtEndsMatchCorrectly()
+    {
+        string spaceAtBeginning = Categorizer.Categorize(_categories, "RT MONTHLY PASS");
+        string spaceAtEnd = Categorizer.Categorize(_categories, "TRANSIT PASS SAC RT");
+
+        Assert.Equal("Public Transit", spaceAtBeginning);
+        Assert.Equal("Public Transit", spaceAtEnd);
     }
 }
