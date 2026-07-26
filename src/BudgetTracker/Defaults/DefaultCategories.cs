@@ -1,6 +1,6 @@
 using BudgetTracker.Models;
 
-namespace BudgetTracker.Data;
+namespace BudgetTracker.Defaults;
 
 /// <summary>
 /// The built-in starter set of budget categories: the template every fresh

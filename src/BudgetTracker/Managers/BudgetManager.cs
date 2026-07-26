@@ -1,10 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
-using BudgetTracker.Data;
+using BudgetTracker.Defaults;
+using BudgetTracker.Infrastructure;
 using BudgetTracker.Models;
 using CsvHelper;
 using System.Globalization;
 
-namespace BudgetTracker.Services;
+namespace BudgetTracker.Managers;
 
 /// <summary>
 /// Holds the live budget state for a session: every category keyed by its name,
@@ -43,9 +44,9 @@ public class BudgetManager
     /// "Uncategorized" catch-all.</summary>
     public Dictionary<string, decimal> ExpensesByCategory { get; set; }
 
-    /// <summary>Where the budgets file lives on disk — computed from the storage
-    /// root and CsvFileName on every read, so it can never fall out of step.</summary>
-    private string FilePath => Path.Combine(StoragePaths.Root, CsvFileName);
+    /// <summary>Where the budgets file lives on disk — computed from the state
+    /// persistence folder and CsvFileName on every read, so it can never fall out of step.</summary>
+    private string FilePath => Path.Combine(FolderPaths.StatePersistence, CsvFileName);
 
     /// <summary>
     /// The constructor assigns through the properties, so their checks run during
@@ -73,7 +74,7 @@ public class BudgetManager
 
     public void SaveBudgets()
     {
-        Directory.CreateDirectory(StoragePaths.Root);
+        Directory.CreateDirectory(FolderPaths.StatePersistence);
 
         using StreamWriter streamWriter = new(FilePath);
         using CsvWriter csv = new(streamWriter, CultureInfo.InvariantCulture);
@@ -104,5 +105,47 @@ public class BudgetManager
         }
     }
 
+    /// <summary>
+    /// Loads the stored budgets, replacing whatever is currently in memory. When no
+    /// file exists yet — a first run, or after the user deletes it — the default categories
+    /// are written out instead, seeding a fresh file.
+    /// </summary>
+    /// <exception cref="InvalidDataException">Thrown when a row carries no category name.</exception>
+    public void LoadBudgets()
+    {
+        if (!File.Exists(FilePath))
+        {
+            SaveBudgets();
+            return;
+        }
 
+        using StreamReader streamReader = new(FilePath);
+        using CsvReader csv = new(streamReader, CultureInfo.InvariantCulture);
+
+        // Built up separately and swapped in at the end, so a failure partway
+        // through leaves the categories already in memory untouched.
+        Dictionary<string, BudgetCategory> loaded = [];
+        int rowNumber = 1;   // the header occupies row 1
+
+        csv.Read();          // step onto the header line
+        csv.ReadHeader();    // memorize the column names
+
+        while (csv.Read())   // step onto each data row until the file runs out
+        {
+            rowNumber++;
+            string name = csv.GetField<string>(nameof(BudgetCategory.Name)) ?? "";
+            if (name.Length == 0)
+                throw new InvalidDataException($"{CsvFileName} row {rowNumber} has no category name.");
+
+            loaded[name] = new(
+                csv.GetField<string>(nameof(BudgetCategory.GeneralClassification)) ?? "",
+                name,
+                [.. (csv.GetField<string>(nameof(BudgetCategory.Keywords)) ?? "").Split('|')],
+                csv.GetField<int>(nameof(BudgetCategory.OptionNumber)),
+                csv.GetField<decimal>(nameof(BudgetCategory.AmtBudgeted)),
+                csv.GetField<decimal>(nameof(BudgetCategory.SearchOrder)));
+        }
+
+        BudgetCategories = loaded;
+    }
 }
