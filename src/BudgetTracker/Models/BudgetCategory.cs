@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace BudgetTracker.Models;
 
 /// <summary>
@@ -16,8 +18,27 @@ public class BudgetCategory
     /// <summary>The specific thing being budgeted for, such as "Groceries" or "Paycheck".</summary>
     public string Name { get; set; }
 
-    /// <summary>Substrings the categorizer looks for in transaction descriptions.</summary>
-    public List<string> Keywords { get; set; }
+    private List<string> _keywords;
+
+    /// <summary>Substrings the categorizer looks for in transaction descriptions.
+    /// An empty list is allowed: a category with no keywords simply never matches.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when set to null.</exception>
+    /// <exception cref="ArgumentException">Thrown when any entry is empty or
+    /// whitespace — an empty keyword would match every description.</exception>
+    public List<string> Keywords
+    {
+        get => _keywords;
+
+        [MemberNotNull(nameof(_keywords))]
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            if (value.Any(string.IsNullOrWhiteSpace))
+                throw new ArgumentException("Keywords must not be empty or whitespace.", nameof(Keywords));
+
+            _keywords = value;
+        }
+    }
 
     private int _optionNumber;
     /// <summary>The number a user types to select this category from a menu.</summary>
