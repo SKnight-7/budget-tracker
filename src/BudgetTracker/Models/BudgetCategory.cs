@@ -32,16 +32,16 @@ public class BudgetCategory
         }
     }
 
-    private decimal _amtBudgeted;
+    private decimal _amountBudgeted;
     /// <summary>The amount budgeted for the category, rounded to two decimal places on assignment.</summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when set to a negative amount.</exception>
-    public decimal AmtBudgeted
+    public decimal AmountBudgeted
     {
-        get => _amtBudgeted;
+        get => _amountBudgeted;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AmtBudgeted));
-            _amtBudgeted = Math.Round(value, 2);
+            ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AmountBudgeted));
+            _amountBudgeted = Math.Round(value, 2);
         }
     }
 
@@ -56,13 +56,13 @@ public class BudgetCategory
     /// setters would reject.
     /// </summary>
     public BudgetCategory(string generalClassification, string name, List<string> keywords,
-                          int optionNumber, decimal amtBudgeted, decimal searchOrder)
+                          int optionNumber, decimal amountBudgeted, decimal searchOrder)
     {
         GeneralClassification = generalClassification;
         Name = name;
         Keywords = keywords;
         OptionNumber = optionNumber;
-        AmtBudgeted = amtBudgeted;
+        AmountBudgeted = amountBudgeted;
         SearchOrder = searchOrder;
     }
 
@@ -73,7 +73,7 @@ public class BudgetCategory
         Budget Category: {Name}
         Keywords: {string.Join(", ", Keywords)}
         Option Number: {OptionNumber}
-        Amount Budgeted: {AmtBudgeted:C}
+        Amount Budgeted: {AmountBudgeted:C}
         Search Order: {SearchOrder}
         """;
 }
