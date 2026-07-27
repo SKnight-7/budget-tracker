@@ -5,8 +5,7 @@ using BudgetTracker.Repositories;
 namespace BudgetTracker.Managers;
 
 /// <summary>
-/// Holds the live budget state for a session: every category keyed by its name,
-/// and the running tallies of money received and spent.
+/// Holds the live budget state for a session: every category keyed by its name.
 /// </summary>
 public class BudgetManager
 {
@@ -17,38 +16,17 @@ public class BudgetManager
     /// and SearchOrder — documented in full on the class itself.</summary>
     public Dictionary<string, BudgetCategory> BudgetCategories { get; set; }
 
-    /// <summary>Running tally of money received, per income category.</summary>
-    public Dictionary<string, decimal> IncomeByCategory { get; set; }
-
-    /// <summary>Running tally of money spent, per expense category, including the
-    /// "Uncategorized" catch-all.</summary>
-    public Dictionary<string, decimal> ExpensesByCategory { get; set; }
-
     /// <summary>
     /// A manager receives its repository through the constructor; the
     /// repository can be any class implementing IBudgetRepository, and the
     /// manager only ever calls the interface's methods, so no storage-format
     /// code appears anywhere in this class. It starts from the default
-    /// categories, keyed by name, with every tally at zero and
-    /// "Uncategorized" ready to collect unmatched spending.
+    /// categories, keyed by name.
     /// </summary>
     public BudgetManager(IBudgetRepository repository)
     {
         _repository = repository;
-
         BudgetCategories = DefaultCategories.GetDefaults().ToDictionary(category => category.Name);
-
-        IncomeByCategory = new();
-        ExpensesByCategory = new();
-        ExpensesByCategory["Uncategorized"] = 0m;
-
-        foreach (BudgetCategory category in BudgetCategories.Values)
-        {
-            if (category.GeneralClassification == "Income")
-                IncomeByCategory[category.Name] = 0m;
-            else
-                ExpensesByCategory[category.Name] = 0m;
-        }
     }
 
     /// <summary>Hands every category currently in memory to the repository for storage.</summary>
