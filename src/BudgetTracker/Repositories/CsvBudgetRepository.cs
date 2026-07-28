@@ -53,9 +53,11 @@ public class CsvBudgetRepository : IBudgetRepository
     /// cell is blank or has stray '|' separators) are dropped rather than
     /// loaded, because an empty keyword would match every description.</remarks>
     /// <exception cref="InvalidDataException">Thrown when a row has no category
-    /// name, or when a row cannot be read as budget data at all — a missing
-    /// column, a word where a number belongs, a malformed line. The original
-    /// error stays attached as the InnerException for diagnosis.</exception>
+    /// name; when two or more rows share a category name (compared ignoring
+    /// case — the full census of duplicates and their rows is reported in one
+    /// message); or when a row cannot be read as budget data at all — a missing
+    /// column, a word where a number belongs, a malformed line. In that last
+    /// case the original error stays attached as the InnerException.</exception>
     public List<BudgetCategory>? Load()
     {
         if (!File.Exists(FilePath))
@@ -72,12 +74,19 @@ public class CsvBudgetRepository : IBudgetRepository
             csv.Read();          // step onto the header line
             csv.ReadHeader();    // memorize the column names
 
+            Dictionary<string, List<int>> rowsByName = new(StringComparer.OrdinalIgnoreCase);
+
             while (csv.Read())   // step onto each data row until the file runs out
             {
                 rowNumber++;
                 string name = csv.GetField<string>(nameof(BudgetCategory.Name)) ?? "";
                 if (name.Length == 0)
                     throw new InvalidDataException($"{CsvFileName} row {rowNumber} has no category name.");
+
+                if (!rowsByName.ContainsKey(name))
+                    rowsByName[name] = [];
+
+                rowsByName[name].Add(rowNumber);
 
                 loaded.Add(new(
                     csv.GetField<string>(nameof(BudgetCategory.GeneralClassification)) ?? "",
@@ -87,7 +96,21 @@ public class CsvBudgetRepository : IBudgetRepository
                     csv.GetField<decimal>(nameof(BudgetCategory.AmountBudgeted)),
                     csv.GetField<decimal>(nameof(BudgetCategory.SearchOrder))));
             }
+
+            List<string> duplicateReports = [];
+
+            foreach (KeyValuePair<string, List<int>> entry in rowsByName)
+            {
+                if (entry.Value.Count > 1)
+                    duplicateReports.Add(
+                        $"multiple versions of '{entry.Key.ToLower()}' were found at the following rows: {string.Join(", ", entry.Value)}.");
+            }
+
+            if (duplicateReports.Count > 0)
+                throw new InvalidDataException(
+                    $"{CsvFileName} has duplicate category names:\n{string.Join("\n", duplicateReports)}");
         }
+
         // Catches CsvHelper's own errors (bad value, missing column, malformed
         // line) and the model's validation throws (a negative amount, a zero
         // option number), all of which know what went wrong but not where.
