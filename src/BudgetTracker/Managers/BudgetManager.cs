@@ -5,33 +5,33 @@ using BudgetTracker.Repositories;
 namespace BudgetTracker.Managers;
 
 /// <summary>
-/// Holds the live budget state for a session: every category keyed by its name.
+/// Holds the live budget state for a session: the categories being tracked.
 /// </summary>
 public class BudgetManager
 {
     private readonly IBudgetRepository _repository;
 
-    /// <summary>Every budget category, fetchable by its name. Each BudgetCategory
-    /// carries: GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted,
+    /// <summary>Every budget category. Each BudgetCategory carries:
+    /// GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted,
     /// and SearchOrder — documented in full on the class itself.</summary>
-    public Dictionary<string, BudgetCategory> BudgetCategories { get; set; }
+    public List<BudgetCategory> BudgetCategories { get; set; }
 
     /// <summary>
     /// A manager receives its repository through the constructor; the
     /// repository can be any class implementing IBudgetRepository, and the
     /// manager only ever calls the interface's methods, so no storage-format
     /// code appears anywhere in this class. It starts from the default
-    /// categories, keyed by name.
+    /// categories.
     /// </summary>
     public BudgetManager(IBudgetRepository repository)
     {
         _repository = repository;
-        BudgetCategories = DefaultCategories.GetDefaults().ToDictionary(category => category.Name);
+        BudgetCategories = DefaultCategories.GetDefaults();
     }
 
     /// <summary>Hands every category currently in memory to the repository for storage.</summary>
     public void SaveBudgets() =>
-        _repository.Save([.. BudgetCategories.Values]);
+        _repository.Save(BudgetCategories);
 
     /// <summary>
     /// Replaces the in-memory categories with whatever the repository has
@@ -52,6 +52,30 @@ public class BudgetManager
             return;
         }
 
-        BudgetCategories = loaded.ToDictionary(category => category.Name);
+        BudgetCategories = loaded;
+    }
+
+    /// <summary>Finds the category a user selected by menu number.</summary>
+    /// <returns>The matching category, or null when no category has that number —
+    /// the caller decides what a miss means (typically: re-prompt).</returns>
+    public BudgetCategory? FindByOptionNumber(int optionNumber) =>
+        BudgetCategories.FirstOrDefault(category => category.OptionNumber == optionNumber);
+
+    /// <summary>Sets a category's budgeted amount and persists all budgets —
+    /// one call, so no budget change can ever exist unsaved.</summary>
+    /// <param name="category">The category to update. Must be one of this manager's
+    /// own categories, typically obtained from FindByOptionNumber; the guard checks
+    /// object identity, not name.</param>
+    /// <param name="amount">The new budgeted amount; the model's own setter
+    /// rejects negatives.</param>
+    /// <exception cref="ArgumentException">Thrown when the given category is not
+    /// one of this manager's categories.</exception>
+    public void UpdateAmount(BudgetCategory category, decimal amount)
+    {
+        if (!BudgetCategories.Contains(category))
+            throw new ArgumentException($"The given category ('{category.Name}') is not one of this manager's categories.", nameof(category));
+
+        category.AmountBudgeted = amount;
+        SaveBudgets();
     }
 }
