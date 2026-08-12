@@ -7,7 +7,7 @@ using System.Globalization;
 namespace BudgetTracker.Repositories;
 
 /// <summary>
-/// The CSV signer of <see cref="IBudgetRepository"/>: keeps the budget
+/// The CSV implementation of <see cref="IBudgetRepository"/>: keeps the budget
 /// categories in a CSV file inside the StatePersistence folder.
 /// </summary>
 public class CsvBudgetRepository : IBudgetRepository
