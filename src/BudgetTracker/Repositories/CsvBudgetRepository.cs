@@ -40,7 +40,7 @@ public class CsvBudgetRepository : IBudgetRepository
         [MemberNotNull(nameof(_csvFileName))]
         set
         {
-            ArgumentException.ThrowIfNullOrEmpty(value);
+            ArgumentException.ThrowIfNullOrEmpty(value, nameof(CsvFileName));
             if (!value.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("File must be a CSV", nameof(CsvFileName));
             _csvFileName = value;

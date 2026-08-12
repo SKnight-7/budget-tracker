@@ -52,7 +52,7 @@ public class Transaction
         [MemberNotNull(nameof(_sourceFile))]
         set
         {
-            ArgumentException.ThrowIfNullOrEmpty(value);
+            ArgumentException.ThrowIfNullOrEmpty(value, nameof(SourceFile));
             if (!value.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("Source file must be a CSV file.", nameof(SourceFile));
             _sourceFile = value;
