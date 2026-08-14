@@ -13,37 +13,37 @@ namespace BudgetTracker.Repositories;
 public class CsvBudgetRepository : IBudgetRepository
 {
     /// <summary>Where the budgets file lives on disk — computed from the state
-    /// persistence folder and CsvFileName on every read, so it can never fall
+    /// persistence folder and PersistenceFileName on every read, so it can never fall
     /// out of step.</summary>
-    private string FilePath => Path.Combine(FolderPaths.StatePersistence, CsvFileName);
+    private string PersistenceFilePath => Path.Combine(FolderPaths.StatePersistence, PersistenceFileName);
 
-    private string _csvFileName;
+    private string _persistenceFileName;
 
     /// <summary>
     /// The constructor assigns through the property, so its checks run during
     /// construction too: a repository can't be created with a filename the
     /// setter would reject.
     /// </summary>
-    public CsvBudgetRepository(string csvFileName = "currentBudgets.csv")
+    public CsvBudgetRepository(string persistenceFileName = "currentBudgets.csv")
     {
-        CsvFileName = csvFileName;
+        PersistenceFileName = persistenceFileName;
     }
 
     /// <summary>The name of the CSV file this repository reads from and writes to.</summary>
     /// <exception cref="ArgumentNullException">Thrown when set to null.</exception>
     /// <exception cref="ArgumentException">Thrown when set to an empty string or to a
     /// name that doesn't end in ".csv".</exception>
-    public string CsvFileName
+    public string PersistenceFileName
     {
-        get => _csvFileName;
+        get => _persistenceFileName;
 
-        [MemberNotNull(nameof(_csvFileName))]
+        [MemberNotNull(nameof(_persistenceFileName))]
         set
         {
-            ArgumentException.ThrowIfNullOrEmpty(value, nameof(CsvFileName));
+            ArgumentException.ThrowIfNullOrEmpty(value, nameof(PersistenceFileName));
             if (!value.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException("File must be a CSV", nameof(CsvFileName));
-            _csvFileName = value;
+                throw new ArgumentException("File must be a CSV", nameof(PersistenceFileName));
+            _persistenceFileName = value;
         }
     }
 
@@ -60,10 +60,10 @@ public class CsvBudgetRepository : IBudgetRepository
     /// case the original error stays attached as the InnerException.</exception>
     public List<BudgetCategory>? Load()
     {
-        if (!File.Exists(FilePath))
+        if (!File.Exists(PersistenceFilePath))
             return null;
 
-        using StreamReader streamReader = new(FilePath);
+        using StreamReader streamReader = new(PersistenceFilePath);
         using CsvReader csv = new(streamReader, CultureInfo.InvariantCulture);
 
         List<BudgetCategory> loaded = [];
@@ -81,7 +81,7 @@ public class CsvBudgetRepository : IBudgetRepository
                 rowNumber++;
                 string name = csv.GetField<string>(nameof(BudgetCategory.Name)) ?? "";
                 if (name.Length == 0)
-                    throw new InvalidDataException($"{CsvFileName} row {rowNumber} has no category name.");
+                    throw new InvalidDataException($"{PersistenceFileName} row {rowNumber} has no category name.");
 
                 if (!rowsByName.ContainsKey(name))
                     rowsByName[name] = [];
@@ -108,7 +108,7 @@ public class CsvBudgetRepository : IBudgetRepository
 
             if (duplicateReports.Count > 0)
                 throw new InvalidDataException(
-                    $"{CsvFileName} has duplicate category names:\n{string.Join("\n", duplicateReports)}");
+                    $"{PersistenceFileName} has duplicate category names:\n{string.Join("\n", duplicateReports)}");
         }
 
         // Catches CsvHelper's own errors (bad value, missing column, malformed
@@ -119,7 +119,7 @@ public class CsvBudgetRepository : IBudgetRepository
         catch (Exception exception) when (exception is CsvHelperException or ArgumentException)
         {
             throw new InvalidDataException(
-                $"{CsvFileName} row {rowNumber} could not be read as budget data.", exception);
+                $"{PersistenceFileName} row {rowNumber} could not be read as budget data.", exception);
         }
 
         return loaded;
@@ -135,7 +135,7 @@ public class CsvBudgetRepository : IBudgetRepository
     {
         Directory.CreateDirectory(FolderPaths.StatePersistence);
 
-        using StreamWriter streamWriter = new(FilePath);
+        using StreamWriter streamWriter = new(PersistenceFilePath);
         using CsvWriter csv = new(streamWriter, CultureInfo.InvariantCulture);
 
         List<string> headers =

@@ -1,5 +1,3 @@
-using BudgetTracker.Models;
-
 namespace BudgetTracker.Repositories;
 
 /// <summary>
@@ -10,12 +8,14 @@ namespace BudgetTracker.Repositories;
 /// </summary>
 public interface ITransactionRepository
 {
-    /// <summary>Fetches the stored transactions.</summary>
-    /// <returns>The stored transactions, or null when nothing is stored yet —
+    /// <summary>Fetches the stored batch: the transactions and the name of
+    /// the bank file they came from.</summary>
+    /// <returns>The stored batch, or null when nothing is stored yet —
     /// what an empty start means is the caller's decision, not storage's.</returns>
-    List<Transaction>? Load();
+    TransactionBatch? Load();
 
-    /// <summary>Stores the given transactions, replacing whatever was stored before.</summary>
-    /// <param name="transactions">The transactions to store.</param>
-    void Save(List<Transaction> transactions);
+    /// <summary>Stores the given batch, replacing whatever was stored before.</summary>
+    /// <param name="batch">The transactions to store, together with the name
+    /// of the bank file they came from.</param>
+    void Save(TransactionBatch batch);
 }
