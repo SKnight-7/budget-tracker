@@ -24,7 +24,7 @@ public class BudgetCategory
     /// An empty list is allowed: a category with no keywords simply never matches.</summary>
     /// <exception cref="ArgumentNullException">Thrown when set to null.</exception>
     /// <exception cref="ArgumentException">Thrown when any entry is empty or
-    /// whitespace — an empty keyword would match every description.</exception>
+    /// whitespace, because an empty keyword would match every description.</exception>
     public List<string> Keywords
     {
         get => _keywords;

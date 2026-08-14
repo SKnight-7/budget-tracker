@@ -11,7 +11,7 @@ namespace BudgetTracker.Repositories;
 public interface IBudgetRepository
 {
     /// <summary>Fetches the stored budget categories.</summary>
-    /// <returns>The stored categories, or null when nothing is stored yet —
+    /// <returns>The stored categories, or null when nothing is stored yet;
     /// what an empty start means is the caller's decision, not storage's.</returns>
     List<BudgetCategory>? Load();
 

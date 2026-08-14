@@ -9,7 +9,7 @@ public static class Menus
     // and names wrap inside it, so no single long entry can stretch a column.
     private const int CardWidth = 22;         // fixed content width, "NN: " prefix included
     private const int ColumnGutter = 5;       // spaces between columns
-    private const int OptionPrefixWidth = 4;  // "NN: " — number right-aligned to 2, colon, space
+    private const int OptionPrefixWidth = 4;  // "NN: ", a number right-aligned to 2, then a colon and a space
 
     /// <summary>Builds a menu display: an underlined title, then options grouped by
     /// general classification and ordered by option number.</summary>

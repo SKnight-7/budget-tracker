@@ -10,7 +10,7 @@ public interface ITransactionRepository
 {
     /// <summary>Fetches the stored batch: the transactions and the name of
     /// the bank file they came from.</summary>
-    /// <returns>The stored batch, or null when nothing is stored yet —
+    /// <returns>The stored batch, or null when nothing is stored yet;
     /// what an empty start means is the caller's decision, not storage's.</returns>
     TransactionBatch? Load();
 

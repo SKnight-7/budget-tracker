@@ -13,7 +13,7 @@ public class BudgetManager
 
     /// <summary>Every budget category. Each BudgetCategory carries:
     /// GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted,
-    /// and SearchOrder — documented in full on the class itself.</summary>
+    /// and SearchOrder, all documented in full on the class itself.</summary>
     public List<BudgetCategory> BudgetCategories { get; set; }
 
     /// <summary>
@@ -36,12 +36,12 @@ public class BudgetManager
     /// <summary>
     /// Replaces the in-memory categories with whatever the repository has
     /// stored. When the repository has nothing yet, the categories already in
-    /// memory — the defaults, on a fresh start — are saved instead, seeding
+    /// memory (the defaults, on a fresh start) are saved instead, seeding
     /// storage: when disk and memory disagree about existing, memory is the
     /// survivor.
     /// </summary>
-    /// <remarks>Anything the repository throws while reading — a rejected row,
-    /// damaged data — travels up through this method unchanged.</remarks>
+    /// <remarks>Anything the repository throws while reading, such as a rejected
+    /// row or damaged data, travels up through this method unchanged.</remarks>
     public void LoadBudgets()
     {
         List<BudgetCategory>? loaded = _repository.Load();
@@ -56,12 +56,12 @@ public class BudgetManager
     }
 
     /// <summary>Finds the category a user selected by menu number.</summary>
-    /// <returns>The matching category, or null when no category has that number —
+    /// <returns>The matching category, or null when no category has that number;
     /// the caller decides what a miss means (typically: re-prompt).</returns>
     public BudgetCategory? FindByOptionNumber(int optionNumber) =>
         BudgetCategories.FirstOrDefault(category => category.OptionNumber == optionNumber);
 
-    /// <summary>Sets a category's budgeted amount and persists all budgets —
+    /// <summary>Sets a category's budgeted amount and persists all budgets in
     /// one call, so no budget change can ever exist unsaved.</summary>
     /// <param name="category">The category to update. Must be one of this manager's
     /// own categories, typically obtained from FindByOptionNumber; the guard checks

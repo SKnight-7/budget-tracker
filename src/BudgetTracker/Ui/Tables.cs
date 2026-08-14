@@ -1,7 +1,7 @@
 namespace BudgetTracker.Ui;
 
 /// <summary>
-/// Draws grid tables from headers and rows of text — this app's homegrown
+/// Draws grid tables from headers and rows of text: this app's homegrown
 /// replacement for the Python original's tabulate dependency.
 /// </summary>
 public static class Tables
@@ -16,8 +16,8 @@ public static class Tables
     /// <param name="cellPadding">Spaces inside each cell, either side of the content.</param>
     /// <returns>The finished table as a single multi-line string.</returns>
     /// <exception cref="ArgumentException">Thrown when any row's cell count doesn't match
-    /// the headers, or a supplied alignments list is the wrong length — one exception
-    /// gathering every problem found.</exception>
+    /// the headers, or a supplied alignments list is the wrong length; one exception
+    /// gathers every problem found.</exception>
     /// <remarks>Cells are text only: callers format their own numbers, dates, and money.
     /// Columns are always sized to their content, so cells never overflow or wrap.</remarks>
     public static string Generate(List<string> headers, List<List<string>> rows,
@@ -67,7 +67,7 @@ public static class Tables
         return string.Join("\n", finalTable);
     }
 
-    // Each column ends up as wide as its widest occupant — its header, or any
+    // Each column ends up as wide as its widest occupant: its header, or any
     // row's cell at that position.
     private static List<int> ColumnWidths(List<string> headers, List<List<string>> rows)
     {

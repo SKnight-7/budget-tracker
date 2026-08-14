@@ -12,8 +12,8 @@ namespace BudgetTracker.Repositories;
 /// </summary>
 public class CsvBudgetRepository : IBudgetRepository
 {
-    /// <summary>Where the budgets file lives on disk — computed from the state
-    /// persistence folder and PersistenceFileName on every read, so it can never fall
+    /// <summary>Where the budgets file lives on disk, computed from the state
+    /// persistence folder and PersistenceFileName on every read so it can never fall
     /// out of step.</summary>
     private string PersistenceFilePath => Path.Combine(FolderPaths.StatePersistence, PersistenceFileName);
 
@@ -54,10 +54,11 @@ public class CsvBudgetRepository : IBudgetRepository
     /// loaded, because an empty keyword would match every description.</remarks>
     /// <exception cref="InvalidDataException">Thrown when a row has no category
     /// name; when two or more rows share a category name (compared ignoring
-    /// case — the full census of duplicates and their rows is reported in one
-    /// message); or when a row cannot be read as budget data at all — a missing
-    /// column, a word where a number belongs, a malformed line. In that last
-    /// case the original error stays attached as the InnerException.</exception>
+    /// case; every duplicate and its rows are reported in one message); or
+    /// when a row cannot be read as budget data at all, such as when there is
+    /// a missing column, a word where a number belongs, or a malformed line.
+    /// In that last case the original error stays attached as the
+    /// InnerException.</exception>
     public List<BudgetCategory>? Load()
     {
         if (!File.Exists(PersistenceFilePath))
@@ -115,7 +116,7 @@ public class CsvBudgetRepository : IBudgetRepository
         // line) and the model's validation throws (a negative amount, a zero
         // option number), all of which know what went wrong but not where.
         // The nameless-row InvalidDataException above is neither, so it flies
-        // through untouched — it already carries its row number.
+        // through untouched, as it already carries its row number.
         catch (Exception exception) when (exception is CsvHelperException or ArgumentException)
         {
             throw new InvalidDataException(
@@ -129,7 +130,7 @@ public class CsvBudgetRepository : IBudgetRepository
     /// <remarks>Creates the StatePersistence folder when it doesn't exist yet,
     /// and rewrites the whole file every time: headers first (taken from the
     /// property names via nameof, so they can't drift), then one row per
-    /// category — amounts as plain two-decimal numbers, keywords joined
+    /// category: amounts as plain two-decimal numbers, keywords joined
     /// by '|'.</remarks>
     public void Save(List<BudgetCategory> categories)
     {

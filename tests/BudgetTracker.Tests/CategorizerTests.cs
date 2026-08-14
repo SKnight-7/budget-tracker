@@ -18,7 +18,7 @@ public class CategorizerTests
     // confirm that SearchOrder resolves the conflict correctly.
     //
     // xUnit creates a fresh instance of this class for every test, so each test
-    // gets its own new copy of this list — no test can contaminate another.
+    // gets its own new copy of this list, so no test can contaminate another.
     private readonly List<BudgetCategory> _categories =
     [
         new("Food & Dining", "Groceries", ["safeway", "grocery"], 1, 0m, 7),
@@ -127,7 +127,7 @@ public class CategorizerTests
 
     /// <summary>
     /// When a description matches keywords from multiple categories, the category
-    /// with the lower SearchOrder is chosen — even if the other category's keyword
+    /// with the lower SearchOrder is chosen, even if the other category's keyword
     /// appears earlier in the description text.
     /// </summary>
     [Fact]
