@@ -17,9 +17,6 @@ public class CsvTransactionRepository : ITransactionRepository
     /// out of step.</summary>
     private string PersistenceFilePath => Path.Combine(FolderPaths.StatePersistence, PersistenceFileName);
 
-    /// <summary>Recorded as the batch's source when no stored row carries one.</summary>
-    private const string UnknownSourceName = "unknown";
-
     private string _persistenceFileName;
 
     /// <summary>
@@ -94,8 +91,9 @@ public class CsvTransactionRepository : ITransactionRepository
                 string rowSourceFile = csv.GetField<string>(nameof(TransactionBatch.SourceFileName)) ?? "";
 
                 // Blank sources don't vote: a hole in this column will not kill
-                // the file. The batch takes its name from the rows that have one,
-                // or falls back to UnknownSourceName after the loop when none do.
+                // the file. The batch takes its name from the rows that have one;
+                // when none do, the TransactionBatch constructor labels it
+                // "unknown" at construction.
                 if (rowSourceFile.Length > 0 && batchSourceFile.Length == 0)
                     batchSourceFile = rowSourceFile;
 
@@ -146,9 +144,6 @@ public class CsvTransactionRepository : ITransactionRepository
         }
 
         if (loaded.Count == 0) return null;
-
-        if (batchSourceFile.Length == 0)
-            batchSourceFile = UnknownSourceName;
 
         TransactionBatch batched = new(loaded, batchSourceFile);
         return batched;

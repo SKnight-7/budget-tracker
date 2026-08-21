@@ -1,3 +1,5 @@
+using BudgetTracker.Models;
+
 namespace BudgetTracker.Repositories;
 
 /// <summary>

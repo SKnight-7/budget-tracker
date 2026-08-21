@@ -21,9 +21,6 @@ public class JsonTransactionRepository : ITransactionRepository
     /// so the stored file is readable by humans.</summary>
     private static readonly JsonSerializerOptions IndentedJson = new() { WriteIndented = true };
 
-    /// <summary>Recorded as the batch's source when no stored row carries one.</summary>
-    private const string UnknownSourceName = "unknown";
-
     private string _persistenceFileName;
 
     /// <summary>
@@ -91,9 +88,6 @@ public class JsonTransactionRepository : ITransactionRepository
 
         if (batch is null || batch.Transactions is null || batch.Transactions.Count == 0)
             return null;
-
-        if (string.IsNullOrWhiteSpace(batch.SourceFileName))
-            return batch with { SourceFileName = UnknownSourceName };
 
         return batch;
     }
