@@ -12,9 +12,10 @@ namespace BudgetTracker.Repositories;
 /// </summary>
 public class CsvBudgetRepository : IBudgetRepository
 {
-    /// <summary>Where the budgets file lives on disk, computed from the state
-    /// persistence folder and PersistenceFileName on every read so it can never fall
-    /// out of step.</summary>
+    /// <summary>The path to where the budgets file is stored on the local
+    /// computer, computed from the state persistence folder and
+    /// PersistenceFileName on every read, so the path can never fall out of
+    /// step with PersistenceFileName.</summary>
     private string PersistenceFilePath => Path.Combine(FolderPaths.StatePersistence, PersistenceFileName);
 
     private string _persistenceFileName;

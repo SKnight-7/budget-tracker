@@ -6,14 +6,14 @@ using BudgetTracker.Models;
 namespace BudgetTracker.Repositories;
 
 /// <summary>
-/// The JSON implementation of <see cref="ITransactionRepository"/>: keeps the
-/// batch in a JSON file inside the StatePersistence folder, one document with
-/// the same property names and nesting as TransactionBatch itself.
+/// The JSON implementation of <see cref="IBudgetRepository"/>: keeps the
+/// budgets in a JSON file inside the StatePersistence folder, one document
+/// with the same property names and nesting as TrackedBudgets itself.
 /// </summary>
-public class JsonTransactionRepository : ITransactionRepository
+public class JsonBudgetRepository : IBudgetRepository
 {
-    /// <summary>The path to where the transactions file is stored on the
-    /// local computer, computed from the state persistence folder and
+    /// <summary>The path to where the budgets file is stored on the local
+    /// computer, computed from the state persistence folder and
     /// PersistenceFileName on every read, so the path can never fall out of
     /// step with PersistenceFileName.</summary>
     private string PersistenceFilePath => Path.Combine(FolderPaths.StatePersistence, PersistenceFileName);
@@ -29,7 +29,7 @@ public class JsonTransactionRepository : ITransactionRepository
     /// construction too: a repository can't be created with a filename the
     /// setter would reject.
     /// </summary>
-    public JsonTransactionRepository(string persistenceFileName = "lastUploadedTransactions.json")
+    public JsonBudgetRepository(string persistenceFileName = "currentBudgets.json")
     {
         PersistenceFileName = persistenceFileName;
     }
@@ -53,19 +53,20 @@ public class JsonTransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc/>
-    /// <remarks>Reads the whole file and deserializes it as one batch. Tolerant
-    /// wherever nothing can be lost: a missing or blank file, a file holding
-    /// only the word null, or a batch with zero transactions loads as null,
-    /// the same as nothing stored, and a missing or blank source file name is
-    /// recorded as "unknown". Damage is different: text that cannot be parsed
-    /// as a batch, including a document with no transaction list at all,
-    /// stops the load with an exception, rather than letting a damaged file
-    /// be mistaken for an empty one and overwritten.</remarks>
+    /// <remarks>Reads the whole file and deserializes it as one set of
+    /// budgets. Tolerant wherever nothing can be lost: a missing or blank
+    /// file, a file holding only the word null, or a set with zero
+    /// categories loads as null, the same as nothing stored, so the
+    /// manager's defaults policy applies. Damage is different: text that
+    /// cannot be parsed as budgets, including a document with no category
+    /// list at all, stops the load with an exception, rather than letting a
+    /// damaged file be mistaken for an empty one and overwritten.</remarks>
     /// <exception cref="InvalidDataException">Thrown when the file cannot be
-    /// read as transaction data, whether from malformed JSON or from values
-    /// the models reject (the model constructors run during deserialization).
-    /// The original error stays attached as the InnerException.</exception>
-    public TransactionBatch? Load()
+    /// read as budget data, whether from malformed JSON or from values the
+    /// models reject (the model constructors run during deserialization, so
+    /// duplicate category names are refused here too). The original error
+    /// stays attached as the InnerException.</exception>
+    public TrackedBudgets? Load()
     {
         if (!File.Exists(PersistenceFilePath))
             return null;
@@ -75,35 +76,35 @@ public class JsonTransactionRepository : ITransactionRepository
         if (string.IsNullOrWhiteSpace(json))
             return null;
 
-        TransactionBatch? batch;
+        TrackedBudgets? budgets;
 
         try
         {
-            batch = JsonSerializer.Deserialize<TransactionBatch>(json);
+            budgets = JsonSerializer.Deserialize<TrackedBudgets>(json);
         }
         catch (Exception exception) when (exception is JsonException or ArgumentException)
         {
             throw new InvalidDataException(
-                $"{PersistenceFileName} could not be read as transaction data. " +
+                $"{PersistenceFileName} could not be read as budget data. " +
                 "Review the file to investigate, or delete it to start over.", exception);
         }
 
-        if (batch is null || batch.Transactions.Count == 0)
+        if (budgets is null || budgets.Categories.Count == 0)
             return null;
 
-        return batch;
+        return budgets;
     }
 
     /// <inheritdoc/>
     /// <remarks>Creates the StatePersistence folder when it doesn't exist yet,
     /// and rewrites the whole file every time: one indented JSON document,
-    /// with the source file name stored once at the top and never repeated
-    /// per transaction.</remarks>
-    public void Save(TransactionBatch batch)
+    /// an object with a single property named Categories whose value is the
+    /// array of categories.</remarks>
+    public void Save(TrackedBudgets budgets)
     {
         Directory.CreateDirectory(FolderPaths.StatePersistence);
 
-        string batchAsString = JsonSerializer.Serialize(batch, IndentedJson);
-        File.WriteAllText(PersistenceFilePath, batchAsString);
+        string budgetsAsString = JsonSerializer.Serialize(budgets, IndentedJson);
+        File.WriteAllText(PersistenceFilePath, budgetsAsString);
     }
 }
