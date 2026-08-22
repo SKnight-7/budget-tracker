@@ -107,7 +107,7 @@ public class CsvBudgetRepository : IBudgetRepository
             {
                 if (entry.Value.Count > 1)
                     duplicateReports.Add(
-                        $"multiple versions of '{entry.Key.ToLower()}' were found at the following rows: {string.Join(", ", entry.Value)}.");
+                        $"multiple versions of '{entry.Key}' were found at the following rows: {string.Join(", ", entry.Value)}.");
             }
 
             if (duplicateReports.Count > 0)

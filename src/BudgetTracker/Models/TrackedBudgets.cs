@@ -2,8 +2,9 @@ namespace BudgetTracker.Models;
 
 /// <summary>
 /// One validated set of budget categories: every budget the app is tracking,
-/// guaranteed free of duplicate names. The budgets twin of
-/// <see cref="TransactionBatch"/>.
+/// guaranteed free of duplicate names. This is the single value the budget
+/// repositories trade in (Load returns one, Save receives one), and the
+/// budgets twin of <see cref="TransactionBatch"/>.
 /// </summary>
 public class TrackedBudgets
 {

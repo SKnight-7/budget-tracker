@@ -58,7 +58,8 @@ public class CsvTransactionRepository : ITransactionRepository
     /// unreadable number needs no separate check, because reading the field
     /// as an int refuses to parse it, and the wrapper below adds the row
     /// number. A file with headers but no rows loads as null, the same as
-    /// no file at all.</remarks>
+    /// no file at all; a completely blank file is treated as damage
+    /// instead, because Save always writes headers.</remarks>
     /// <exception cref="InvalidDataException">Thrown when rows carry two
     /// different source file names; when two or more rows share a
     /// transaction number; or when a row cannot be read as transaction data
@@ -145,8 +146,8 @@ public class CsvTransactionRepository : ITransactionRepository
 
         if (loaded.Count == 0) return null;
 
-        TransactionBatch batched = new(loaded, batchSourceFile);
-        return batched;
+        TransactionBatch batch = new(loaded, batchSourceFile);
+        return batch;
     }
 
     /// <inheritdoc/>
