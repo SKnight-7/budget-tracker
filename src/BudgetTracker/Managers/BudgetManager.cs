@@ -14,7 +14,7 @@ public class BudgetManager
     /// <summary>Every budget category. Each BudgetCategory carries:
     /// GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted,
     /// and SearchOrder, all documented in full on the class itself.</summary>
-    public List<BudgetCategory> BudgetCategories { get; set; }
+    public TrackedBudgets BudgetCategories { get; private set; }
 
     /// <summary>
     /// A manager receives its repository through the constructor; the
@@ -26,7 +26,9 @@ public class BudgetManager
     public BudgetManager(IBudgetRepository repository)
     {
         _repository = repository;
-        BudgetCategories = DefaultCategories.GetDefaults();
+        List<BudgetCategory> defaults = DefaultCategories.GetDefaults();
+
+        BudgetCategories = new(defaults);
     }
 
     /// <summary>Hands every category currently in memory to the repository for storage.</summary>
@@ -44,7 +46,7 @@ public class BudgetManager
     /// row or damaged data, travels up through this method unchanged.</remarks>
     public void LoadBudgets()
     {
-        List<BudgetCategory>? loaded = _repository.Load();
+        TrackedBudgets? loaded = _repository.Load();
 
         if (loaded is null)
         {
@@ -59,7 +61,7 @@ public class BudgetManager
     /// <returns>The matching category, or null when no category has that number;
     /// the caller decides what a miss means (typically: re-prompt).</returns>
     public BudgetCategory? FindByOptionNumber(int optionNumber) =>
-        BudgetCategories.FirstOrDefault(category => category.OptionNumber == optionNumber);
+        BudgetCategories.Categories.FirstOrDefault(category => category.OptionNumber == optionNumber);
 
     /// <summary>Sets a category's budgeted amount and persists all budgets in
     /// one call, so no budget change can ever exist unsaved.</summary>
@@ -72,7 +74,7 @@ public class BudgetManager
     /// one of this manager's categories.</exception>
     public void UpdateAmount(BudgetCategory category, decimal amount)
     {
-        if (!BudgetCategories.Contains(category))
+        if (!BudgetCategories.Categories.Contains(category))
             throw new ArgumentException($"The given category ('{category.Name}') is not one of this manager's categories.", nameof(category));
 
         category.AmountBudgeted = amount;

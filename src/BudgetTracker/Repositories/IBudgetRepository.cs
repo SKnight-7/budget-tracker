@@ -13,9 +13,9 @@ public interface IBudgetRepository
     /// <summary>Fetches the stored budget categories.</summary>
     /// <returns>The stored categories, or null when nothing is stored yet;
     /// what an empty start means is the caller's decision, not storage's.</returns>
-    List<BudgetCategory>? Load();
+    TrackedBudgets? Load();
 
-    /// <summary>Stores the given categories, replacing whatever was stored before.</summary>
-    /// <param name="categories">The categories to store.</param>
-    void Save(List<BudgetCategory> categories);
+    /// <summary>Stores the given budgets, replacing whatever was stored before.</summary>
+    /// <param name="budgets">The validated set of budget categories to store.</param>
+    void Save(TrackedBudgets budgets);
 }

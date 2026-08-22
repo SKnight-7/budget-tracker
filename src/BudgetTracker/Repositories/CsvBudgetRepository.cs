@@ -51,7 +51,10 @@ public class CsvBudgetRepository : IBudgetRepository
     /// <remarks>Checks the data while reading the file: a row with no category
     /// name is rejected, and empty keyword entries (produced when the keywords
     /// cell is blank or has stray '|' separators) are dropped rather than
-    /// loaded, because an empty keyword would match every description.</remarks>
+    /// loaded, because an empty keyword would match every description. A file
+    /// with headers but no rows loads as null, the same as no file at all,
+    /// so the manager's defaults policy applies; a completely blank file is
+    /// treated as damage instead, because Save always writes headers.</remarks>
     /// <exception cref="InvalidDataException">Thrown when a row has no category
     /// name; when two or more rows share a category name (compared ignoring
     /// case; every duplicate and its rows are reported in one message); or
@@ -59,7 +62,7 @@ public class CsvBudgetRepository : IBudgetRepository
     /// a missing column, a word where a number belongs, or a malformed line.
     /// In that last case the original error stays attached as the
     /// InnerException.</exception>
-    public List<BudgetCategory>? Load()
+    public TrackedBudgets? Load()
     {
         if (!File.Exists(PersistenceFilePath))
             return null;
@@ -123,7 +126,10 @@ public class CsvBudgetRepository : IBudgetRepository
                 $"{PersistenceFileName} row {rowNumber} could not be read as budget data.", exception);
         }
 
-        return loaded;
+        if (loaded.Count == 0) return null;
+
+        TrackedBudgets budgets = new(loaded);
+        return budgets;
     }
 
     /// <inheritdoc/>
@@ -132,7 +138,7 @@ public class CsvBudgetRepository : IBudgetRepository
     /// property names via nameof, so they can't drift), then one row per
     /// category: amounts as plain two-decimal numbers, keywords joined
     /// by '|'.</remarks>
-    public void Save(List<BudgetCategory> categories)
+    public void Save(TrackedBudgets budgets)
     {
         Directory.CreateDirectory(FolderPaths.StatePersistence);
 
@@ -153,7 +159,7 @@ public class CsvBudgetRepository : IBudgetRepository
             csv.WriteField(header);
         csv.NextRecord();
 
-        foreach (BudgetCategory category in categories)
+        foreach (BudgetCategory category in budgets.Categories)
         {
             csv.WriteField(category.GeneralClassification);
             csv.WriteField(category.Name);
