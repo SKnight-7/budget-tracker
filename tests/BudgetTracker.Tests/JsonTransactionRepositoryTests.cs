@@ -33,11 +33,8 @@ public class JsonTransactionRepositoryTests : IDisposable
         File.Delete(TestFilePath);
     }
 
-    // The amount has three decimals on purpose, to show that rounding happens.
-    // It deliberately avoids a midpoint such as -12.345, whose rounding
-    // direction depends on a policy the app has not decided yet.
     private static Transaction MakeTransaction(int number) =>
-        new(number, new DateOnly(2026, 8, 22), -12.346m, "SAFEWAY 1234", "Groceries");
+        new(number, new DateOnly(2026, 8, 22), -12.34m, "SAFEWAY 1234", "Groceries");
 
     /// <summary>With no file stored yet, Load returns null.</summary>
     [Fact]
@@ -49,8 +46,7 @@ public class JsonTransactionRepositoryTests : IDisposable
     }
 
     /// <summary>What Save writes, Load reads back: the transactions and the
-    /// batch's source file name. The amount comes back already rounded to two
-    /// places, because the Transaction setter rounds on assignment.</summary>
+    /// batch's source file name.</summary>
     [Fact]
     public void SaveThenLoad_RoundTripsTheBatch()
     {
@@ -63,7 +59,7 @@ public class JsonTransactionRepositoryTests : IDisposable
         Assert.Equal(SourceFileName, loaded.SourceFileName);
         Assert.Equal(2, loaded.Transactions.Count);
         Assert.Equal(new DateOnly(2026, 8, 22), loaded.Transactions[0].Date);
-        Assert.Equal(-12.35m, loaded.Transactions[0].Amount);
+        Assert.Equal(-12.34m, loaded.Transactions[0].Amount);
         Assert.Equal("Groceries", loaded.Transactions[0].Category);
         Assert.Equal(2, loaded.Transactions[1].Number);
     }

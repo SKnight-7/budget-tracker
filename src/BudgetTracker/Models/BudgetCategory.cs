@@ -54,15 +54,23 @@ public class BudgetCategory
     }
 
     private decimal _amountBudgeted;
-    /// <summary>The amount budgeted for the category, rounded to two decimal places on assignment.</summary>
+    /// <summary>The amount budgeted for the category: at most two decimal places, never silently rounded.</summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when set to a negative amount.</exception>
+    /// <exception cref="ArgumentException">Thrown when set to a value with
+    /// more than two decimal places. Typed budget amounts are the
+    /// interaction layer's to round, deliberately and visibly.</exception>
     public decimal AmountBudgeted
     {
         get => _amountBudgeted;
         set
         {
             ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AmountBudgeted));
-            _amountBudgeted = Math.Round(value, 2);
+
+            if (value != Math.Round(value, 2))
+                throw new ArgumentException(
+                    $"Amounts must have at most two decimal places; got {value}.", nameof(AmountBudgeted));
+
+            _amountBudgeted = value;
         }
     }
 

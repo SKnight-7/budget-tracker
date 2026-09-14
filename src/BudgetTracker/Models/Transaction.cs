@@ -24,12 +24,24 @@ public class Transaction
     public DateOnly Date { get; set; }
 
     private decimal _amount;
-    /// <summary>The transaction amount, rounded to two decimal places on assignment.
-    /// Negative is money out, positive is money in, matching bank-CSV convention.</summary>
+    /// <summary>The transaction amount: at most two decimal places, never
+    /// silently rounded. Negative is money out, positive is money in,
+    /// matching bank-CSV convention.</summary>
+    /// <exception cref="ArgumentException">Thrown when set to a value with
+    /// more than two decimal places. Bank files carry two decimals, so a
+    /// finer value means damaged or hand-edited data, and rounding it would
+    /// hide the evidence.</exception>
     public decimal Amount
     {
         get => _amount;
-        set => _amount = Math.Round(value, 2);
+        set
+        {
+            if (value != Math.Round(value, 2))
+                throw new ArgumentException(
+                    $"Amounts must have at most two decimal places; got {value}.", nameof(Amount));
+
+            _amount = value;
+        }
     }
     /// <summary>The bank's description of the transaction; the categorizer matches
     /// its keywords against this text.</summary>
