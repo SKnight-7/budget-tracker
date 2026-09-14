@@ -20,7 +20,8 @@ Built:
   its repositories trade in, and each does all of its validation in the constructor.
   Construction is the only door, so a set with duplicate category names or a batch
   with duplicate transaction numbers can never exist; duplicates are reported in one
-  exception naming every offender.
+  exception naming every offender. Both aggregate models are covered by the test
+  suite.
 - **Categorizer.** Keyword matching with a configurable search order to resolve
   overlaps ("animal hospital" must match Pet Care before Medical ever sees it),
   covered by an xUnit test suite.
@@ -33,7 +34,9 @@ Built:
   number attached. The JSON side distinguishes tolerance from damage: a missing or
   blank file loads as nothing-stored so defaults apply, but text that cannot be
   parsed stops the load with an exception rather than letting a damaged file be
-  mistaken for an empty one and overwritten.
+  mistaken for an empty one and overwritten. Both JSON repositories are covered by
+  the test suite, each pointed at its own test file so the app's real data is never
+  touched.
 - **BudgetManager.** Receives its repository through the constructor (dependency
   injection), typed as the interface, so the storage format can change without
   touching the manager. It trades in `TrackedBudgets`, with lookup by menu option
