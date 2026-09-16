@@ -17,7 +17,7 @@ public static class Parser
     /// <summary>Parses text as a decimal.</summary>
     /// <param name="potentialDecimal">The text to parse, typically raw user input.</param>
     /// <returns>The parsed value, or null if the text is not a valid decimal.</returns>
-    public static decimal? ParseDecimal(string potentialDecimal) =>
+    public static decimal? ParseDecimal(string? potentialDecimal) =>
         decimal.TryParse(potentialDecimal, out decimal parsedDecimal) ? parsedDecimal : null;
 
     /// <summary>Parses text as a date in one exact format.</summary>
@@ -31,7 +31,7 @@ public static class Parser
     /// digits while "MM" or "dd" require exactly two. Uses the invariant culture so
     /// stored data parses identically on any machine.
     /// </remarks>
-    public static DateOnly? ParseDate(string potentialDate, string expectedFormat) =>
+    public static DateOnly? ParseDate(string? potentialDate, string expectedFormat) =>
     DateOnly.TryParseExact(potentialDate, expectedFormat, CultureInfo.InvariantCulture,
         DateTimeStyles.None, out DateOnly parsedDate) ? parsedDate : null;
 }
