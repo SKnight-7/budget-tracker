@@ -1,4 +1,4 @@
-namespace BudgetTracker.Models;
+﻿namespace BudgetTracker.Models;
 
 /// <summary>
 /// One validated set of budget categories: every budget the app is tracking,
@@ -6,7 +6,7 @@ namespace BudgetTracker.Models;
 /// repositories trade in (Load returns one, Save receives one), and the
 /// budgets twin of <see cref="TransactionBatch"/>.
 /// </summary>
-public class TrackedBudgets
+public class BudgetSet
 {
     /// <summary>The budget categories in this set. Assigned at construction
     /// and never reassigned; guaranteed free of duplicate names, compared
@@ -24,7 +24,7 @@ public class TrackedBudgets
     /// categories share a name, ignoring case, naming every duplicated name
     /// in one message. Each duplicate is reported in whichever spelling
     /// appeared first in the list.</exception>
-    public TrackedBudgets(List<BudgetCategory> categories)
+    public BudgetSet(List<BudgetCategory> categories)
     {
         ArgumentNullException.ThrowIfNull(categories);
 

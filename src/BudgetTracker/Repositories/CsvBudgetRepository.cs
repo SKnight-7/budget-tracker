@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using BudgetTracker.Infrastructure;
 using BudgetTracker.Models;
 using CsvHelper;
@@ -63,7 +63,7 @@ public class CsvBudgetRepository : IBudgetRepository
     /// a missing column, a word where a number belongs, or a malformed line.
     /// In that last case the original error stays attached as the
     /// InnerException.</exception>
-    public TrackedBudgets? Load()
+    public BudgetSet? Load()
     {
         if (!File.Exists(PersistenceFilePath))
             return null;
@@ -129,7 +129,7 @@ public class CsvBudgetRepository : IBudgetRepository
 
         if (loaded.Count == 0) return null;
 
-        TrackedBudgets budgets = new(loaded);
+        BudgetSet budgets = new(loaded);
         return budgets;
     }
 
@@ -139,7 +139,7 @@ public class CsvBudgetRepository : IBudgetRepository
     /// property names via nameof, so they can't drift), then one row per
     /// category: amounts as plain two-decimal numbers, keywords joined
     /// by '|'.</remarks>
-    public void Save(TrackedBudgets budgets)
+    public void Save(BudgetSet budgets)
     {
         Directory.CreateDirectory(FolderPaths.StatePersistence);
 

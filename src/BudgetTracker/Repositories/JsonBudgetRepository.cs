@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using BudgetTracker.Infrastructure;
 using System.Text.Json;
 using BudgetTracker.Models;
@@ -8,7 +8,7 @@ namespace BudgetTracker.Repositories;
 /// <summary>
 /// The JSON implementation of <see cref="IBudgetRepository"/>: keeps the
 /// budgets in a JSON file inside the StatePersistence folder, one document
-/// with the same property names and nesting as TrackedBudgets itself.
+/// with the same property names and nesting as BudgetSet itself.
 /// </summary>
 public class JsonBudgetRepository : IBudgetRepository
 {
@@ -66,7 +66,7 @@ public class JsonBudgetRepository : IBudgetRepository
     /// models reject (the model constructors run during deserialization, so
     /// duplicate category names are refused here too). The original error
     /// stays attached as the InnerException.</exception>
-    public TrackedBudgets? Load()
+    public BudgetSet? Load()
     {
         if (!File.Exists(PersistenceFilePath))
             return null;
@@ -76,11 +76,11 @@ public class JsonBudgetRepository : IBudgetRepository
         if (string.IsNullOrWhiteSpace(json))
             return null;
 
-        TrackedBudgets? budgets;
+        BudgetSet? budgets;
 
         try
         {
-            budgets = JsonSerializer.Deserialize<TrackedBudgets>(json);
+            budgets = JsonSerializer.Deserialize<BudgetSet>(json);
         }
         catch (Exception exception) when (exception is JsonException or ArgumentException)
         {
@@ -100,7 +100,7 @@ public class JsonBudgetRepository : IBudgetRepository
     /// and rewrites the whole file every time: one indented JSON document,
     /// an object with a single property named Categories whose value is the
     /// array of categories.</remarks>
-    public void Save(TrackedBudgets budgets)
+    public void Save(BudgetSet budgets)
     {
         Directory.CreateDirectory(FolderPaths.StatePersistence);
 

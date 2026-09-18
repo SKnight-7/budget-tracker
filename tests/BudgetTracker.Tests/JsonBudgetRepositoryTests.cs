@@ -1,4 +1,4 @@
-using BudgetTracker.Infrastructure;
+﻿using BudgetTracker.Infrastructure;
 using BudgetTracker.Models;
 using BudgetTracker.Repositories;
 
@@ -43,7 +43,7 @@ public class JsonBudgetRepositoryTests : IDisposable
     [Fact]
     public void Load_NoFile_ReturnsNull()
     {
-        TrackedBudgets? loaded = _repository.Load();
+        BudgetSet? loaded = _repository.Load();
 
         Assert.Null(loaded);
     }
@@ -53,10 +53,10 @@ public class JsonBudgetRepositoryTests : IDisposable
     [Fact]
     public void SaveThenLoad_RoundTripsTheCategories()
     {
-        TrackedBudgets saved = new([MakeCategory("Groceries", 1), MakeCategory("Eating Out", 2)]);
+        BudgetSet saved = new([MakeCategory("Groceries", 1), MakeCategory("Eating Out", 2)]);
 
         _repository.Save(saved);
-        TrackedBudgets? loaded = _repository.Load();
+        BudgetSet? loaded = _repository.Load();
 
         Assert.NotNull(loaded);
         Assert.Equal(2, loaded.Categories.Count);
@@ -72,14 +72,14 @@ public class JsonBudgetRepositoryTests : IDisposable
     public void SaveEmptyThenLoad_ReturnsNull()
     {
         _repository.Save(new([]));
-        TrackedBudgets? loaded = _repository.Load();
+        BudgetSet? loaded = _repository.Load();
 
         Assert.True(File.Exists(TestFilePath));
         Assert.Null(loaded);
     }
 
     /// <summary>A file carrying two categories with the same name is refused by
-    /// the TrackedBudgets constructor during deserialization, and the repository
+    /// the BudgetSet constructor during deserialization, and the repository
     /// reports it as InvalidDataException with the constructor's error attached.</summary>
     [Fact]
     public void Load_DuplicateNamesInFile_ThrowsInvalidDataException()

@@ -1,13 +1,13 @@
-using BudgetTracker.Models;
+﻿using BudgetTracker.Models;
 
 namespace BudgetTracker.Tests;
 
 /// <summary>
-/// Tests for the TrackedBudgets model. Construction is the only door, so
+/// Tests for the BudgetSet model. Construction is the only door, so
 /// every test is about what the constructor accepts and what it refuses.
 /// Each test reads as a small specification of the model's intended behavior.
 /// </summary>
-public class TrackedBudgetsTests
+public class BudgetSetTests
 {
     // Builds one valid category with the given name. Everything except the
     // name is filler: these tests care about names only.
@@ -21,14 +21,14 @@ public class TrackedBudgetsTests
         // The parameter is declared non-nullable, so the compiler warns about
         // passing null. The "!" after null tells the compiler "I know, this is
         // deliberate": it changes nothing at runtime, it only silences the warning.
-        Assert.Throws<ArgumentNullException>(() => new TrackedBudgets(null!));
+        Assert.Throws<ArgumentNullException>(() => new BudgetSet(null!));
     }
 
     /// <summary>An empty list is allowed: tracking no budgets yet is a valid truth.</summary>
     [Fact]
     public void Constructor_EmptyList_IsAllowed()
     {
-        TrackedBudgets budgets = new([]);
+        BudgetSet budgets = new([]);
 
         // Assert.Empty passes when the collection has no items.
         Assert.Empty(budgets.Categories);
@@ -45,7 +45,7 @@ public class TrackedBudgetsTests
             MakeCategory("Eating Out", 2),
         ];
 
-        TrackedBudgets budgets = new(categories);
+        BudgetSet budgets = new(categories);
 
         // Assert.Same checks that both names refer to one and the same object,
         // not merely two lists with equal contents.
@@ -63,7 +63,7 @@ public class TrackedBudgetsTests
             MakeCategory("GROCERIES", 2),
         ];
 
-        ArgumentException exception = Assert.Throws<ArgumentException>(() => new TrackedBudgets(categories));
+        ArgumentException exception = Assert.Throws<ArgumentException>(() => new BudgetSet(categories));
 
         // Assert.Contains checks that the first string appears somewhere inside the second.
         Assert.Contains("Groceries", exception.Message);

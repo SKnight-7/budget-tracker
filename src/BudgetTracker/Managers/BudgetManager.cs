@@ -1,4 +1,4 @@
-using BudgetTracker.Defaults;
+﻿using BudgetTracker.Defaults;
 using BudgetTracker.Models;
 using BudgetTracker.Repositories;
 
@@ -14,7 +14,7 @@ public class BudgetManager
     /// <summary>Every budget category. Each BudgetCategory carries:
     /// GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted,
     /// and SearchOrder, all documented in full on the class itself.</summary>
-    public TrackedBudgets BudgetCategories { get; private set; }
+    public BudgetSet BudgetCategories { get; private set; }
 
     /// <summary>
     /// A manager receives its repository through the constructor; the
@@ -46,7 +46,7 @@ public class BudgetManager
     /// row or damaged data, travels up through this method unchanged.</remarks>
     public void LoadSavedBudgets()
     {
-        TrackedBudgets? loaded = _repository.Load();
+        BudgetSet? loaded = _repository.Load();
 
         if (loaded is null)
         {
