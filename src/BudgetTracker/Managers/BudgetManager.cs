@@ -44,7 +44,7 @@ public class BudgetManager
     /// </summary>
     /// <remarks>Anything the repository throws while reading, such as a rejected
     /// row or damaged data, travels up through this method unchanged.</remarks>
-    public void LoadBudgets()
+    public void LoadSavedBudgets()
     {
         TrackedBudgets? loaded = _repository.Load();
 
