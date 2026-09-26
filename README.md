@@ -15,13 +15,18 @@ I didn't yet have the experience to give it the first time.
 Built:
 
 - **Models.** `Transaction` and `BudgetCategory` validate in their property setters,
-  so an invalid object cannot be constructed. Above them sit two aggregate models,
-  `TrackedBudgets` and `TransactionBatch`, twins by design: each is the single value
-  its repositories trade in, and each does all of its validation in the constructor.
-  Construction is the only door, so a set with duplicate category names or a batch
-  with duplicate transaction numbers can never exist; duplicates are reported in one
-  exception naming every offender. Both aggregate models are covered by the test
-  suite.
+  so an invalid object cannot be constructed. String properties follow one rule:
+  when a missing value has a sensible meaning, the setter substitutes it (a blank
+  transaction category becomes "Unbudgeted", a blank source name becomes
+  "unknown"); when it has none, the setter throws (a budget category must have a
+  name). Strings that code compares against ("Income", "Unbudgeted") are declared
+  once, as public constants, and referenced everywhere else.
+  Above the two base models sit two aggregate models, `BudgetSet` and
+  `TransactionBatch`, twins by design: each is the single value its repositories
+  trade in, and each does all of its validation in the constructor. Construction is
+  the only door, so a set with duplicate category names or a batch with duplicate
+  transaction numbers can never exist; duplicates are reported in one exception
+  naming every offender. Both aggregate models are covered by the test suite.
 - **Categorizer.** Keyword matching with a configurable search order to resolve
   overlaps ("animal hospital" must match Pet Care before Medical ever sees it),
   covered by an xUnit test suite.
@@ -39,8 +44,34 @@ Built:
   touched.
 - **BudgetManager.** Receives its repository through the constructor (dependency
   injection), typed as the interface, so the storage format can change without
-  touching the manager. It trades in `TrackedBudgets`, with lookup by menu option
+  touching the manager. It trades in `BudgetSet`, with lookup by menu option
   number and an update method that persists immediately.
+- **Bank-file import.** `IBankTransactionSource` defines a read-only contract for
+  how data enters the app, kept deliberately separate from the app's own
+  persistence. `WellsFargoTransactionSource` reads the bank's headerless CSV
+  export, assigns transaction numbers from row order, folds check numbers into
+  descriptions, and sorts failures by extent: when no row parses, the file is
+  reported as the wrong layout; when only some rows fail, every bad row is named in
+  one exception; and an empty file is a valid empty batch.
+- **TransactionManager.** The transactions twin of BudgetManager, receiving both
+  its repository and its bank-file source through the constructor, each typed as
+  an interface. It keeps the most recently uploaded batch, finds transactions by
+  number, and persists every recategorization in the same call that makes it, so
+  no change can exist unsaved.
+- **Totals pipeline.** `TransactionGrouper` groups a batch's transactions by
+  category name, case-insensitively, into a dictionary of lists. For each budget
+  category, `SnapshotGenerator` looks up that category's transactions, totals
+  their amounts, and flips the sign of every non-income total so spending displays
+  as a positive number; transactions whose category matches no tracked budget are
+  combined into a single "Unbudgeted" entry in the same list. Each budget's
+  results travel as a `CategorySnapshot`: general classification, category name,
+  budgeted amount, actual amount, and a difference computed in the constructor
+  from the values passed in. `FinancialSnapshot` receives the finished list and
+  computes six overview figures from the income and expense entries; the
+  Unbudgeted entry is excluded from all six, so the overview compares the plan
+  only against money the plan covers. No repository reads or writes these types,
+  and no class keeps an instance: each snapshot is built when requested and handed
+  to the caller.
 - **Parser.** Wraps the standard TryParse patterns to return null on failure instead
   of throwing, so the interactive layer can validate raw user input with a simple
   null check. Date parsing takes a caller-supplied format so each data source can
@@ -53,14 +84,10 @@ Built:
 
 In progress:
 
-- **Bank-file import.** A read-only source, interface plus CSV implementation, that
-  reads a bank's downloaded CSV and turns it into transactions. This is how data
-  enters the app, kept deliberately separate from the app's own persistence.
-- **TransactionManager.** The transactions twin of BudgetManager, holding the live
-  transaction state for a session and born holding both the repository and the
-  bank-file source.
-- **After that.** Totals calculation, the budget and transaction views, and the
-  interactive menu loop that ties it all together.
+- **Views and the interactive loop.** The budgets-with-actuals view and the
+  transactions view, built on the table renderer; the controller where budgets and
+  transactions finally cross; and the menu loop in Program.cs, where the concrete
+  implementations are chosen and handed in.
 
 Running the app today prints the greeting; the storage layer waits on the
 interactive loop to be exercised.
