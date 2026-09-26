@@ -87,8 +87,7 @@ public class WellsFargoTransactionSource : IBankTransactionSource
                     rowNumber,
                     date.Value,
                     amount.Value,
-                    $"{checkNum}{description}",
-                    "Uncategorized"));
+                    $"{checkNum}{description}"));
             }
 
             // When no row could be read at all, the file is probably not a

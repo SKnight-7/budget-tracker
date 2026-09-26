@@ -62,7 +62,7 @@ public class JsonBudgetRepositoryTests : IDisposable
         Assert.Equal(2, loaded.Categories.Count);
         Assert.Equal("Groceries", loaded.Categories[0].Name);
         Assert.Equal("keyword", loaded.Categories[0].Keywords[0]);
-        Assert.Equal(25.5m, loaded.Categories[0].AmountBudgeted);
+        Assert.Equal(25.5m, loaded.Categories[0].BudgetedAmount);
         Assert.Equal("Eating Out", loaded.Categories[1].Name);
     }
 
@@ -88,8 +88,8 @@ public class JsonBudgetRepositoryTests : IDisposable
         File.WriteAllText(TestFilePath, """
             {
               "Categories": [
-                { "GeneralClassification": "Food", "Name": "Groceries", "Keywords": ["a"], "OptionNumber": 1, "AmountBudgeted": 10, "SearchOrder": 1 },
-                { "GeneralClassification": "Household", "Name": "groceries", "Keywords": ["b"], "OptionNumber": 2, "AmountBudgeted": 20, "SearchOrder": 2 }
+                { "GeneralClassification": "Food", "Name": "Groceries", "Keywords": ["a"], "OptionNumber": 1, "BudgetedAmount": 10, "SearchOrder": 1 },
+                { "GeneralClassification": "Household", "Name": "groceries", "Keywords": ["b"], "OptionNumber": 2, "BudgetedAmount": 20, "SearchOrder": 2 }
               ]
             }
             """);

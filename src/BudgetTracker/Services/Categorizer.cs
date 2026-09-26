@@ -12,7 +12,7 @@ public static class Categorizer
     /// <param name="categories">The categories to consider; they are checked in ascending
     /// SearchOrder so more specific categories get first claim.</param>
     /// <param name="description">The transaction description to match against.</param>
-    /// <returns>The name of the first matching category, or "Uncategorized" when nothing matches.</returns>
+    /// <returns>The name of the first matching category, or "Unbudgeted" when nothing matches.</returns>
     /// <remarks>Matching is case-insensitive substring containment against the description
     /// padded with a leading and trailing space, so keywords with deliberate edge spaces
     /// (" rt ") also match at the start and end of descriptions.</remarks>
@@ -27,6 +27,6 @@ public static class Categorizer
                     return category.Name;
             }
         }
-        return "Uncategorized";
+        return Transaction.UnbudgetedCategoryName;
     }
 }

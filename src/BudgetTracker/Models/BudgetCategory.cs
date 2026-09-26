@@ -11,12 +11,46 @@ namespace BudgetTracker.Models;
 /// </summary>
 public class BudgetCategory
 {
+    /// <summary>The classification value that marks a category as income;
+    /// compared case-insensitively wherever the income test is made. Every
+    /// other classification counts as an expense.</summary>
+    public const string IncomeClassification = "Income";
+
+    private string _generalClassification;
+
     /// <summary>The broad grouping the category belongs to. Categories classified
-    /// as "Income" count as money in; all others count as money out.</summary>
-    public string GeneralClassification { get; set; }
+    /// as "Income" count as money in; all others count as money out. Never null:
+    /// a missing or whitespace classification becomes the empty string, an
+    /// unlabeled-but-valid state that counts as money out.</summary>
+    public string GeneralClassification
+    {
+        get => _generalClassification;
+
+        [MemberNotNull(nameof(_generalClassification))]
+        set
+        {
+            _generalClassification = string.IsNullOrWhiteSpace(value) ? "" : value;
+        }
+    }
+
+    private string _name;
 
     /// <summary>The specific thing being budgeted for, such as "Groceries" or "Paycheck".</summary>
-    public string Name { get; set; }
+    /// <exception cref="ArgumentNullException">Thrown when set to null.</exception>
+    /// <exception cref="ArgumentException">Thrown when set to an empty or
+    /// whitespace name. There is no honest meaning for a budget about nothing,
+    /// and every name-keyed structure downstream depends on this value.</exception>
+    public string Name
+    {
+        get => _name;
+
+        [MemberNotNull(nameof(_name))]
+        set
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(Name));
+            _name = value;
+        }
+    }
 
     private List<string> _keywords;
 
@@ -53,24 +87,24 @@ public class BudgetCategory
         }
     }
 
-    private decimal _amountBudgeted;
+    private decimal _budgetedAmount;
     /// <summary>The amount budgeted for the category: at most two decimal places, never silently rounded.</summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when set to a negative amount.</exception>
     /// <exception cref="ArgumentException">Thrown when set to a value with
     /// more than two decimal places. Typed budget amounts are the
     /// interaction layer's to round, deliberately and visibly.</exception>
-    public decimal AmountBudgeted
+    public decimal BudgetedAmount
     {
-        get => _amountBudgeted;
+        get => _budgetedAmount;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AmountBudgeted));
+            ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(BudgetedAmount));
 
             if (value != Math.Round(value, 2))
                 throw new ArgumentException(
-                    $"Amounts must have at most two decimal places; got {value}.", nameof(AmountBudgeted));
+                    $"Amounts must have at most two decimal places; got {value}.", nameof(BudgetedAmount));
 
-            _amountBudgeted = value;
+            _budgetedAmount = value;
         }
     }
 
@@ -85,13 +119,13 @@ public class BudgetCategory
     /// setters would reject.
     /// </summary>
     public BudgetCategory(string generalClassification, string name, List<string> keywords,
-                          int optionNumber, decimal amountBudgeted, decimal searchOrder)
+                          int optionNumber, decimal budgetedAmount, decimal searchOrder)
     {
         GeneralClassification = generalClassification;
         Name = name;
         Keywords = keywords;
         OptionNumber = optionNumber;
-        AmountBudgeted = amountBudgeted;
+        BudgetedAmount = budgetedAmount;
         SearchOrder = searchOrder;
     }
 
@@ -102,7 +136,7 @@ public class BudgetCategory
         Budget Category: {Name}
         Keywords: {string.Join(", ", Keywords)}
         Option Number: {OptionNumber}
-        Amount Budgeted: {AmountBudgeted:C}
+        Budgeted Amount: {BudgetedAmount:C}
         Search Order: {SearchOrder}
         """;
 }

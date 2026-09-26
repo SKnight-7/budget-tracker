@@ -98,7 +98,7 @@ public class CsvBudgetRepository : IBudgetRepository
                     name,
                     [.. (csv.GetField<string>(nameof(BudgetCategory.Keywords)) ?? "").Split('|', StringSplitOptions.RemoveEmptyEntries)],
                     csv.GetField<int>(nameof(BudgetCategory.OptionNumber)),
-                    csv.GetField<decimal>(nameof(BudgetCategory.AmountBudgeted)),
+                    csv.GetField<decimal>(nameof(BudgetCategory.BudgetedAmount)),
                     csv.GetField<decimal>(nameof(BudgetCategory.SearchOrder))));
             }
 
@@ -152,7 +152,7 @@ public class CsvBudgetRepository : IBudgetRepository
             nameof(BudgetCategory.Name),
             nameof(BudgetCategory.Keywords),
             nameof(BudgetCategory.OptionNumber),
-            nameof(BudgetCategory.AmountBudgeted),
+            nameof(BudgetCategory.BudgetedAmount),
             nameof(BudgetCategory.SearchOrder),
         ];
 
@@ -166,7 +166,7 @@ public class CsvBudgetRepository : IBudgetRepository
             csv.WriteField(category.Name);
             csv.WriteField(string.Join("|", category.Keywords));
             csv.WriteField(category.OptionNumber);
-            csv.WriteField(category.AmountBudgeted.ToString("F2", CultureInfo.InvariantCulture));
+            csv.WriteField(category.BudgetedAmount.ToString("F2", CultureInfo.InvariantCulture));
             csv.WriteField(category.SearchOrder);
             csv.NextRecord();
         }

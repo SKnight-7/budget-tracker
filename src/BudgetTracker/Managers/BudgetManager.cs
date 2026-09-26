@@ -12,7 +12,7 @@ public class BudgetManager
     private readonly IBudgetRepository _repository;
 
     /// <summary>Every budget category. Each BudgetCategory carries:
-    /// GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted,
+    /// GeneralClassification, Name, Keywords, OptionNumber, BudgetedAmount,
     /// and SearchOrder, all documented in full on the class itself.</summary>
     public BudgetSet BudgetCategories { get; private set; }
 
@@ -77,7 +77,7 @@ public class BudgetManager
         if (!BudgetCategories.Categories.Contains(category))
             throw new ArgumentException($"The given category ('{category.Name}') is not one of this manager's categories.", nameof(category));
 
-        category.AmountBudgeted = amount;
+        category.BudgetedAmount = amount;
         SaveBudgets();
     }
 }

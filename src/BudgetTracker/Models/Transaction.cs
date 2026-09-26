@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace BudgetTracker.Models;
 
 /// <summary>
@@ -6,6 +8,7 @@ namespace BudgetTracker.Models;
 /// </summary>
 public class Transaction
 {
+    public const string UnbudgetedCategoryName = "Unbudgeted";
     private int _number;
     /// <summary>The transaction's position in its upload, numbered from 1. Zero is
     /// reserved for the stored-data placeholder, never a real transaction.</summary>
@@ -43,13 +46,37 @@ public class Transaction
             _amount = value;
         }
     }
+    private string _description;
+
     /// <summary>The bank's description of the transaction; the categorizer matches
-    /// its keywords against this text.</summary>
-    public string Description { get; set; }
+    /// its keywords against this text. Never null: a missing description becomes
+    /// the empty string, the same blank truth the bank sources feed for rows
+    /// with nothing to say.</summary>
+    public string Description
+    {
+        get => _description;
+
+        [MemberNotNull(nameof(_description))]
+        set
+        {
+            _description = value ?? "";
+        }
+    }
 
     /// <summary>The budget category the transaction is assigned to. Starts as
-    /// "Uncategorized" until the categorizer or the user says otherwise.</summary>
-    public string Category { get; set; }
+    /// "Unbudgeted" until the categorizer or the user says otherwise.</summary>
+    private string _category;
+
+    public string Category
+    {
+        get => _category;
+
+        [MemberNotNull(nameof(_category))]
+        set
+        {
+            _category = string.IsNullOrWhiteSpace(value) ? UnbudgetedCategoryName : value;
+        }
+    }
 
     /// <summary>
     /// The constructor assigns through the properties, so their checks run during
@@ -58,7 +85,7 @@ public class Transaction
     /// </summary>
     public Transaction(int number, DateOnly date,
                        decimal amount, string description,
-                       string category = "Uncategorized")
+                       string category = UnbudgetedCategoryName)
     {
         Number = number;
         Date = date;
@@ -72,7 +99,7 @@ public class Transaction
         $"""
         Transaction Number: {Number}
         Transaction Date: {Date}
-        Transaction Amount: {Amount:C}
+        Transaction Amount: {Amount:C} //'C' means "currency formatting"
         Description: {Description}
         Category: {Category}
         """;

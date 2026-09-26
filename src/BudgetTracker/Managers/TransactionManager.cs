@@ -57,7 +57,7 @@ public class TransactionManager
 
     /// <summary>Replaces the in-memory batch with the contents of a bank
     /// file, read through the bank source. The new batch arrives with every
-    /// transaction Uncategorized; categorizing it is the controller's job,
+    /// transaction Unbudgeted; categorizing it is the controller's job,
     /// done in place through LastUpload.</summary>
     /// <param name="fileName">The name of the bank file to read.</param>
     /// <returns>True when a batch was read and kept. False when no file has

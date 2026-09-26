@@ -93,36 +93,36 @@ public class CategorizerTests
     }
 
     /// <summary>
-    /// A description containing no recognized keywords returns "Uncategorized".
+    /// A description containing no recognized keywords returns "Unbudgeted".
     /// </summary>
     [Fact]
-    public void Categorize_NoMatch_ReturnsUncategorized()
+    public void Categorize_NoMatch_ReturnsUnbudgeted()
     {
         string result = Categorizer.Categorize(_categories, "CHECK # 1234");
 
-        Assert.Equal("Uncategorized", result);
+        Assert.Equal("Unbudgeted", result);
     }
 
     /// <summary>
-    /// An empty description returns "Uncategorized".
+    /// An empty description returns "Unbudgeted".
     /// </summary>
     [Fact]
-    public void Categorize_EmptyDescription_ReturnsUncategorized()
+    public void Categorize_EmptyDescription_ReturnsUnbudgeted()
     {
         string result = Categorizer.Categorize(_categories, "");
 
-        Assert.Equal("Uncategorized", result);
+        Assert.Equal("Unbudgeted", result);
     }
 
     /// <summary>
-    /// An empty category list returns "Uncategorized" regardless of the description.
+    /// An empty category list returns "Unbudgeted" regardless of the description.
     /// </summary>
     [Fact]
-    public void Categorize_EmptyCategories_ReturnsUncategorized()
+    public void Categorize_EmptyCategories_ReturnsUnbudgeted()
     {
         string result = Categorizer.Categorize([], "SAFEWAY GROCERIES");
 
-        Assert.Equal("Uncategorized", result);
+        Assert.Equal("Unbudgeted", result);
     }
 
     /// <summary>

@@ -117,7 +117,7 @@ public class CsvTransactionRepository : ITransactionRepository
                     csv.GetField<DateOnly>(nameof(Transaction.Date)),
                     csv.GetField<decimal>(nameof(Transaction.Amount)),
                     csv.GetField<string>(nameof(Transaction.Description)) ?? "",
-                    csv.GetField<string>(nameof(Transaction.Category)) ?? "Uncategorized"));
+                    csv.GetField<string>(nameof(Transaction.Category)) ?? Transaction.UnbudgetedCategoryName));
             }
 
             List<string> duplicateReports = [];

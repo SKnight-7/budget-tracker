@@ -15,10 +15,10 @@ public static class DefaultCategories
     /// (" rt ", "cat ") as word-boundary guards for the categorizer's substring
     /// matching. The spaces are load-bearing; edit with care.</remarks>
     public static List<BudgetCategory> GetDefaults() =>
-    // Each entry: (GeneralClassification, Name, Keywords, OptionNumber, AmountBudgeted, SearchOrder)
+    // Each entry: (GeneralClassification, Name, Keywords, OptionNumber, BudgetedAmount, SearchOrder)
     [
-        new("Income", "Paycheck", ["payroll"], 1, 0m, 1),
-        new("Income", "Other Income", ["cashout"], 2, 0m, 2),
+        new(BudgetCategory.IncomeClassification,"Paycheck", ["payroll"], 1, 0m, 1),
+        new(BudgetCategory.IncomeClassification,"Other Income", ["cashout"], 2, 0m, 2),
         new("Monthly Household", "Mortgage & Rent", ["apartments", "mortgage"], 3, 0m, 3),
         new("Monthly Household", "Utilities", ["utility", "gas", "electric", "water", "smud", "pge"], 4, 0m, 4),
         new("Monthly Household", "Phone", ["verizon", "metropcs", "mobile"], 5, 0m, 5),
