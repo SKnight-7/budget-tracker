@@ -1,9 +1,10 @@
 namespace BudgetTracker.Models;
 
 /// <summary>
-/// One saved set of transactions together with the name of the bank file
-/// they came from. This is the single value the transaction repositories
-/// trade in: Load returns one, Save receives one.
+/// One set of transactions together with the name of the bank file they
+/// came from. This is the single value the transaction repositories trade
+/// in (Load returns one, Save receives one), and the package a display
+/// receives when transactions are shown, sorted copies included.
 /// </summary>
 public class TransactionBatch
 {

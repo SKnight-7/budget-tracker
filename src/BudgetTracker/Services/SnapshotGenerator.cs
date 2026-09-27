@@ -42,6 +42,6 @@ public static class SnapshotGenerator
             )
         );
 
-        return new FinancialSnapshot(snapshots);
+        return new FinancialSnapshot(snapshots, transactionBatch.SourceFileName);
     }
 }
