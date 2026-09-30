@@ -78,15 +78,27 @@ Built:
   declare its own shape, and uses the invariant culture so stored data parses
   identically on any machine.
 - **Console UI toolkit.** Table renderer, single- and multi-column menu builders,
-  text layout and alignment helpers, an `IUserInterface` abstraction, and a launch
-  greeting (FIGlet banner plus a hand-rolled cowsay, because budgeting is stressful
-  and cows are not).
+  text layout and alignment helpers, and a launch greeting (FIGlet banner plus a
+  hand-rolled cowsay, because budgeting is stressful and cows are not).
+- **Two front-end interfaces, split by capability.** `IDisplay` holds the display
+  methods; every one receives data, never pre-formatted text, so each implementing
+  class does its own formatting and a web front end could implement it. `IInput`
+  holds the prompt methods, which only front ends that can ask and wait can
+  implement; a web server cannot, which is why the two interfaces are separate.
+  `ConsoleUi` implements both, with every display built: the budgets view (two
+  tables with aligned summary blocks beneath them, the unbudgeted amount beside
+  the expense totals), the transactions view, and the two menus.
+- **FinancialController.** The operations layer, where budgets and transactions
+  cross. It receives both managers through its constructor, exposes finders that
+  return the matching object or null so the interaction loop can validate each
+  user entry as it is typed, and composes the import flow: load a bank file,
+  categorize every transaction against the live budget set, save. No Ui type
+  appears in the file, so any front end could drive the same operations.
 
 In progress:
 
-- **Views and the interactive loop.** The budgets-with-actuals view and the
-  transactions view, built on the table renderer; the controller where budgets and
-  transactions finally cross; and the menu loop in Program.cs, where the concrete
+- **The interaction loop.** The menu conversation that ties input, controller,
+  and displays together, and the Program.cs wiring where the concrete
   implementations are chosen and handed in.
 
 Running the app today prints the greeting; the storage layer waits on the
