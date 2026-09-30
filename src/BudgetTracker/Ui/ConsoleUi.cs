@@ -183,6 +183,14 @@ public class ConsoleUi : IDisplay, IInput
             })];
     }
 
+    /// <summary>Builds the aligned label-and-amount block printed beneath a
+    /// table: labels padded left to the longest label, amounts padded right
+    /// to the longest amount so the figures stack, three spaces between.
+    /// Each line is trimmed of trailing spaces, which turns an empty
+    /// label-and-amount pair into a genuinely blank separator line, and the
+    /// lines are joined with no trailing newline, like Tables and Menus.</summary>
+    /// <exception cref="ArgumentException">Thrown when the two lists differ
+    /// in length, since each label pairs with the amount at its index.</exception>
     private string BuildSummary(List<string> labels, List<string> amounts)
     {
         if (labels.Count != amounts.Count)

@@ -63,10 +63,13 @@ public class Transaction
         }
     }
 
-    /// <summary>The budget category the transaction is assigned to. Starts as
-    /// "Unbudgeted" until the categorizer or the user says otherwise.</summary>
     private string _category;
 
+    /// <summary>The budget category the transaction is assigned to. Starts as
+    /// "Unbudgeted" until the categorizer or the user says otherwise. Never
+    /// null: assigning null or whitespace stores UnbudgetedCategoryName
+    /// instead, because an unassigned category is an expected state with an
+    /// honest word, not an error.</summary>
     public string Category
     {
         get => _category;
