@@ -9,17 +9,17 @@ namespace BudgetTracker.Services;
 public static class Categorizer
 {
     /// <summary>Finds the budget category whose keywords match a transaction description.</summary>
-    /// <param name="categories">The categories to consider; they are checked in ascending
-    /// SearchOrder so more specific categories get first claim.</param>
+    /// <param name="budgets">The budget set whose categories are considered; they are
+    /// checked in ascending SearchOrder so more specific categories get first claim.</param>
     /// <param name="description">The transaction description to match against.</param>
     /// <returns>The name of the first matching category, or "Unbudgeted" when nothing matches.</returns>
     /// <remarks>Matching is case-insensitive substring containment against the description
     /// padded with a leading and trailing space, so keywords with deliberate edge spaces
     /// (" rt ") also match at the start and end of descriptions.</remarks>
-    public static string Categorize(List<BudgetCategory> categories, string description)
+    public static string Categorize(BudgetSet budgets, string description)
     {
         string paddedDescription = $" {description} ";
-        foreach (BudgetCategory category in categories.OrderBy(c => c.SearchOrder)) 
+        foreach (BudgetCategory category in budgets.Categories.OrderBy(c => c.SearchOrder))
         {
             foreach (string keyword in category.Keywords)
             {

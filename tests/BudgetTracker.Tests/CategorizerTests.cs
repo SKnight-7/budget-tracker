@@ -18,8 +18,8 @@ public class CategorizerTests
     // confirm that SearchOrder resolves the conflict correctly.
     //
     // xUnit creates a fresh instance of this class for every test, so each test
-    // gets its own new copy of this list, so no test can contaminate another.
-    private readonly List<BudgetCategory> _categories =
+    // gets its own new copy of this set, so no test can contaminate another.
+    private readonly BudgetSet _budgets = new(
     [
         new("Food & Dining", "Groceries", ["safeway", "grocery"], 1, 0m, 7),
         new("Food & Dining", "Eating Out", ["starbuck", "chipotle"], 2, 0m, 8),
@@ -28,13 +28,13 @@ public class CategorizerTests
         new("Other", "Entertainment", ["netflix", "video"], 5, 0m, 20),
         new("Shopping", "Other Shopping", ["amazon", "outlet", "target"], 6, 0m, 999),
         new("Travel & Transport", "Public Transit", ["transit", " rt "], 10, 0m, 10),
-    ];
+    ]);
 
     /// <summary>A description containing a clear keyword returns the matching category.</summary>
     [Fact]
     public void Categorize_DescriptionContainsKeyword_ReturnsMatchingCategory()
     {
-        string result = Categorizer.Categorize(_categories, "SAFEWAY 1234 SACRAMENTO");
+        string result = Categorizer.Categorize(_budgets, "SAFEWAY 1234 SACRAMENTO");
 
         Assert.Equal("Groceries", result);
     }
@@ -45,9 +45,9 @@ public class CategorizerTests
     [Fact]
     public void Categorize_MatchIsCaseInsensitive_AllCasesSameResult()
     {
-        string lowercase = Categorizer.Categorize(_categories, "starbucks downtown");
-        string uppercase = Categorizer.Categorize(_categories, "STARBUCKS DOWNTOWN");
-        string mixedCase = Categorizer.Categorize(_categories, "StArBuCks DoWnToWn");
+        string lowercase = Categorizer.Categorize(_budgets, "starbucks downtown");
+        string uppercase = Categorizer.Categorize(_budgets, "STARBUCKS DOWNTOWN");
+        string mixedCase = Categorizer.Categorize(_budgets, "StArBuCks DoWnToWn");
 
         Assert.Equal("Eating Out", lowercase);
         Assert.Equal("Eating Out", uppercase);
@@ -61,7 +61,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_SearchOrder_PetBeatsMedical()
     {
-        string result = Categorizer.Categorize(_categories, "ANIMAL HOSPITAL EMERGENCY VISIT");
+        string result = Categorizer.Categorize(_budgets, "ANIMAL HOSPITAL EMERGENCY VISIT");
 
         Assert.Equal("Pet Care", result);
     }
@@ -74,7 +74,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_SearchOrder_GroceriesBeatsOtherShopping()
     {
-        string result = Categorizer.Categorize(_categories, "GROCERY OUTLET 0987 SACRAMENTO");
+        string result = Categorizer.Categorize(_budgets, "GROCERY OUTLET 0987 SACRAMENTO");
 
         Assert.Equal("Groceries", result);
     }
@@ -87,7 +87,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_SearchOrder_EntertainmentBeatsOtherShopping()
     {
-        string result = Categorizer.Categorize(_categories, "AMAZON PRIME VIDEO ONLINE");
+        string result = Categorizer.Categorize(_budgets, "AMAZON PRIME VIDEO ONLINE");
 
         Assert.Equal("Entertainment", result);
     }
@@ -98,7 +98,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_NoMatch_ReturnsUnbudgeted()
     {
-        string result = Categorizer.Categorize(_categories, "CHECK # 1234");
+        string result = Categorizer.Categorize(_budgets, "CHECK # 1234");
 
         Assert.Equal("Unbudgeted", result);
     }
@@ -109,7 +109,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_EmptyDescription_ReturnsUnbudgeted()
     {
-        string result = Categorizer.Categorize(_categories, "");
+        string result = Categorizer.Categorize(_budgets, "");
 
         Assert.Equal("Unbudgeted", result);
     }
@@ -120,7 +120,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_EmptyCategories_ReturnsUnbudgeted()
     {
-        string result = Categorizer.Categorize([], "SAFEWAY GROCERIES");
+        string result = Categorizer.Categorize(new([]), "SAFEWAY GROCERIES");
 
         Assert.Equal("Unbudgeted", result);
     }
@@ -133,7 +133,7 @@ public class CategorizerTests
     [Fact]
     public void Categorize_MultipleMatches_SearchOrderDetermines()
     {
-        string result = Categorizer.Categorize(_categories, "amazon refund video purchase");
+        string result = Categorizer.Categorize(_budgets, "amazon refund video purchase");
 
         Assert.Equal("Entertainment", result);
     }
@@ -141,8 +141,8 @@ public class CategorizerTests
     [Fact]
     public void Categorize_KeywordMatch_KeywordsWithSpacesAtEndsMatchCorrectly()
     {
-        string spaceAtBeginning = Categorizer.Categorize(_categories, "RT MONTHLY PASS");
-        string spaceAtEnd = Categorizer.Categorize(_categories, "TRANSIT PASS SAC RT");
+        string spaceAtBeginning = Categorizer.Categorize(_budgets, "RT MONTHLY PASS");
+        string spaceAtEnd = Categorizer.Categorize(_budgets, "TRANSIT PASS SAC RT");
 
         Assert.Equal("Public Transit", spaceAtBeginning);
         Assert.Equal("Public Transit", spaceAtEnd);
