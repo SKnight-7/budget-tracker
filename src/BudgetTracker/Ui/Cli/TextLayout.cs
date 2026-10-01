@@ -1,4 +1,4 @@
-namespace BudgetTracker.Ui;
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
 /// The shared text-layout toolbox: styling and cell-padding used by every

@@ -1,4 +1,4 @@
-namespace BudgetTracker.Ui;
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>How text sits within its cell: pushed left, pushed right, or centered.</summary>
 public enum Alignment

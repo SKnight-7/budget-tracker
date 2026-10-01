@@ -1,7 +1,9 @@
-namespace BudgetTracker.Ui;
+using BudgetTracker.Controllers;
+
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
-/// Builds menu displays from MenuOption entries.
+/// Builds menu displays from AppAction entries.
 /// </summary>
 public static class Menus
 {
@@ -17,14 +19,14 @@ public static class Menus
     /// <param name="title">The heading shown underlined above the menu.</param>
     /// <returns>The formatted menu as a single string, ready to display.</returns>
     /// <remarks>Groups appear in order of their lowest option number.</remarks>
-    public static string Generate(List<MenuOption> options, string title = "MENU")
+    public static string Generate(List<AppAction> options, string title = "MENU")
     {
         List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}"];
 
         foreach (var group in options.OrderBy(o => o.OptionNumber).GroupBy(o => o.GeneralClassification))
         {
             menuToDisplay.Add($"\n{group.Key}:");
-            foreach (MenuOption option in group)
+            foreach (AppAction option in group)
             {
                 menuToDisplay.Add($"    {option.OptionNumber} - {option.Label}");
             }
@@ -42,7 +44,7 @@ public static class Menus
     /// <remarks>Cards appear in order of their lowest option number. Every column is
     /// the same fixed width (CardWidth) with a fixed gutter between columns, and
     /// option names wrap inside it onto indented continuation lines.</remarks>
-    public static string GenerateColumned(List<MenuOption> options, string title = "MENU", int columnCount = 4)
+    public static string GenerateColumned(List<AppAction> options, string title = "MENU", int columnCount = 4)
     {
         List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}\n"];
 
@@ -87,11 +89,11 @@ public static class Menus
 
     // One classification's entries as display lines: uppercased header first, then
     // each option with its number; wrapped names continue on indented lines.
-    private static List<string> BuildCard(IGrouping<string, MenuOption> group)
+    private static List<string> BuildCard(IGrouping<string, AppAction> group)
     {
         List<string> card = [group.Key.ToUpper()];
 
-        foreach (MenuOption option in group)
+        foreach (AppAction option in group)
         {
             List<string> nameLines = WrapWords(option.Label, CardWidth - OptionPrefixWidth);
             card.Add($"{option.OptionNumber,2}: {nameLines[0]}");

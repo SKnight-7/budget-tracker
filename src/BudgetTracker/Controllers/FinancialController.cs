@@ -18,6 +18,20 @@ public class FinancialController
     private readonly BudgetManager _budgetManager;
     private readonly TransactionManager _transactionManager;
 
+    /// <summary>The catalog of actions this application offers, one entry
+    /// per operation a front end can start. Front ends read this list and
+    /// present the choices their own way; the option numbers identify the
+    /// actions when a choice comes back.</summary>
+    public List<AppAction> AppActions { get; } =
+    [
+        new("Budget Options", "View current budgets", 1),
+        new("Budget Options", "Update budgets", 2),
+        new("Transaction Options", "Choose a CSV transaction file to load", 3),
+        new("Transaction Options", "View transactions by category", 4),
+        new("Transaction Options", "View transactions in original order", 5),
+        new("Transaction Options", "Recategorize transactions", 6),
+    ];
+
     /// <summary>
     /// Receives the two managers this controller commands and assigns them
     /// to the fields; the constructor does nothing else. Loading saved

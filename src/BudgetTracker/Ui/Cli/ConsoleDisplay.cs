@@ -1,12 +1,17 @@
+using BudgetTracker.Controllers;
 using BudgetTracker.Models;
+using BudgetTracker.Ui;
 
-namespace BudgetTracker.Ui;
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
-/// The console implementation of <see cref="IDisplay"/> and <see cref="IInput"/>:
-/// writes to and reads from the terminal.
+/// The console implementation of <see cref="IDisplay"/>: formats data as
+/// text and writes it to the terminal. Its sibling
+/// <see cref="ConsoleInput"/> implements <see cref="IInput"/>; the two are
+/// separate classes because the two contracts are separate and the halves
+/// share nothing.
 /// </summary>
-public class ConsoleUi : IDisplay, IInput
+public class ConsoleDisplay : IDisplay
 {
     /// <inheritdoc/>
     public void DisplayMessage(string message)
@@ -27,7 +32,7 @@ public class ConsoleUi : IDisplay, IInput
     }
 
     /// <inheritdoc/>
-    public void DisplayMainMenu(List<MenuOption> options, string menuTitle)
+    public void DisplayMainMenu(List<AppAction> options, string menuTitle)
     {
         Console.WriteLine(Menus.Generate(options, menuTitle));
     }
@@ -38,7 +43,7 @@ public class ConsoleUi : IDisplay, IInput
     /// explicit third argument here. IDisplay.DisplayBudgetMenu deliberately
     /// has no column parameter because no front end other than CLI
     /// arranges options into character columns.</remarks>
-    public void DisplayBudgetMenu(List<MenuOption> options, string menuTitle)
+    public void DisplayBudgetMenu(List<AppAction> options, string menuTitle)
     {
         Console.WriteLine(Menus.GenerateColumned(options, menuTitle));
     }
@@ -139,30 +144,6 @@ public class ConsoleUi : IDisplay, IInput
                         + $"Transactions from: {batch.SourceFileName}\n"
                         + "\n"
                         + Tables.Generate(headers, rows, alignments));
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
-    public string GetUserInput(string inputPrompt)
-    {
-        Console.Write(inputPrompt);
-        return Console.ReadLine() ?? "q";
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
-    public string GetOptionNumber(string optionNumberPrompt)
-    {
-        Console.Write(optionNumberPrompt);
-        return Console.ReadLine() ?? "q";
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
-    public string GetFileName(string fileNamePrompt)
-    {
-        Console.Write(fileNamePrompt);
-        return Console.ReadLine() ?? "q";
     }
 
     /// <summary>Turns category snapshots into table rows for the budgets

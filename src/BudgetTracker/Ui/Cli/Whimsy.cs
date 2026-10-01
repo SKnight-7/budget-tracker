@@ -1,6 +1,6 @@
 using Figgle.Fonts;
 
-namespace BudgetTracker.Ui;
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
 /// Builds the app's greeting: a large banner title plus the cow delivering a random pun.

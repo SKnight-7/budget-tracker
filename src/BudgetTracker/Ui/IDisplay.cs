@@ -1,3 +1,4 @@
+using BudgetTracker.Controllers;
 using BudgetTracker.Models;
 
 namespace BudgetTracker.Ui;
@@ -28,14 +29,14 @@ public interface IDisplay
     /// <summary>Displays what the app can do: each action's label next to
     /// the option number the user enters to start it, grouped under the
     /// given title.</summary>
-    void DisplayMainMenu(List<MenuOption> options, string menuTitle);
+    void DisplayMainMenu(List<AppAction> options, string menuTitle);
 
     /// <summary>Displays each budget category's name next to the option
     /// number the user enters to select it, for flows that need a category
     /// chosen: setting a budgeted amount, or recategorizing a transaction.
     /// How the categories are arranged on screen is each implementing
     /// class's own decision.</summary>
-    void DisplayBudgetMenu(List<MenuOption> options, string menuTitle);
+    void DisplayBudgetMenu(List<AppAction> options, string menuTitle);
 
     /// <summary>Displays the full financial picture in the snapshot: each
     /// income and expense category with its budgeted amount, actual amount,

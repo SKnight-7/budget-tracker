@@ -1,4 +1,4 @@
-namespace BudgetTracker.Ui;
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>Where the cow stands beneath the speech bubble.</summary>
 public enum CowPosition

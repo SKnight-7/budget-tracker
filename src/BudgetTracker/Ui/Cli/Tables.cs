@@ -1,4 +1,4 @@
-namespace BudgetTracker.Ui;
+namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
 /// Draws grid tables from headers and rows of text: this app's homegrown
