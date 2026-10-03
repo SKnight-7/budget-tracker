@@ -10,8 +10,8 @@ public class Transaction
 {
     public const string UnbudgetedCategoryName = "Unbudgeted";
     private int _number;
-    /// <summary>The transaction's position in its upload, numbered from 1. Zero is
-    /// reserved for the stored-data placeholder, never a real transaction.</summary>
+    /// <summary>The transaction's position in its upload, numbered from 1
+    /// by the bank source in row order.</summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when set to a negative number.</exception>
     public int Number
     {
@@ -50,8 +50,8 @@ public class Transaction
 
     /// <summary>The bank's description of the transaction; the categorizer matches
     /// its keywords against this text. Never null: a missing description becomes
-    /// the empty string, the same blank truth the bank sources feed for rows
-    /// with nothing to say.</summary>
+    /// the empty string; a bank row with no description is an expected
+    /// case, not an error.</summary>
     public string Description
     {
         get => _description;

@@ -22,7 +22,7 @@ Built:
   name). Strings that code compares against ("Income", "Unbudgeted") are declared
   once, as public constants, and referenced everywhere else.
   Above the two base models sit two aggregate models, `BudgetSet` and
-  `TransactionBatch`, twins by design: each is the single value its repositories
+  `TransactionBatch`, built on the same pattern: each is the single value its repositories
   trade in, and each does all of its validation in the constructor. Construction is
   the only door, so a set with duplicate category names or a batch with duplicate
   transaction numbers can never exist; duplicates are reported in one exception
@@ -53,7 +53,7 @@ Built:
   descriptions, and sorts failures by extent: when no row parses, the file is
   reported as the wrong layout; when only some rows fail, every bad row is named in
   one exception; and an empty file is a valid empty batch.
-- **TransactionManager.** The transactions twin of BudgetManager, receiving both
+- **TransactionManager.** The transactions counterpart of BudgetManager, receiving both
   its repository and its bank-file source through the constructor, each typed as
   an interface. It keeps the most recently uploaded batch, finds transactions by
   number, and persists every recategorization in the same call that makes it, so
@@ -85,9 +85,10 @@ Built:
   class does its own formatting and a web front end could implement it. `IInput`
   holds the prompt methods, which only front ends that can ask and wait can
   implement; a web server cannot, which is why the two interfaces are separate.
-  `ConsoleUi` implements both, with every display built: the budgets view (two
-  tables with aligned summary blocks beneath them, the unbudgeted amount beside
-  the expense totals), the transactions view, and the two menus.
+  `ConsoleDisplay` and `ConsoleInput` implement them, one class per interface,
+  with every display built: the budgets view (two tables with aligned summary
+  blocks beneath them, the unbudgeted amount beside the expense totals), the
+  transactions view, and the two menus.
 - **FinancialController.** The operations layer, where budgets and transactions
   cross. It receives both managers through its constructor, exposes finders that
   return the matching object or null so the interaction loop can validate each

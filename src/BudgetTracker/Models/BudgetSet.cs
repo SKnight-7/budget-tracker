@@ -4,7 +4,8 @@
 /// One validated set of budget categories: every budget the app is tracking,
 /// guaranteed free of duplicate names. This is the single value the budget
 /// repositories trade in (Load returns one, Save receives one), and the
-/// budgets twin of <see cref="TransactionBatch"/>.
+/// budgets counterpart of <see cref="TransactionBatch"/>, which follows the
+/// same pattern.
 /// </summary>
 public class BudgetSet
 {
