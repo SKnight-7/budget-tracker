@@ -53,11 +53,11 @@ public class InteractionLoop
                     break;
 
                 case "4":
-
+                    ViewTransactionsByCategory();
                     break;
 
                 case "5":
-
+                    ViewTransactionsInOriginalOrder();
                     break;
 
                 case "6":
@@ -157,5 +157,26 @@ public class InteractionLoop
             _display.DisplayBudgets(_controller.GetSnapshot());
             return;
         }
+    }
+
+    // Shows the current transactions ordered by category, case-insensitively;
+    // the display receives a sorted copy and the live batch is never reordered.
+    private void ViewTransactionsByCategory()
+    {
+        TransactionBatch batch = _controller.GetLastUpload();
+        List<Transaction> sortedTransactions = [.. batch.Transactions
+                        .OrderBy(transaction => transaction.Category, StringComparer.OrdinalIgnoreCase)];
+        _display.DisplayTransactions(new(sortedTransactions, batch.SourceFileName));
+    }
+
+    // Shows the current transactions in bank-file order, rebuilt from the
+    // transaction numbers rather than trusted from the list's position;
+    // the display receives a sorted copy and the live batch is never reordered.
+    private void ViewTransactionsInOriginalOrder()
+    {
+        TransactionBatch batch = _controller.GetLastUpload();
+        List<Transaction> orderedTransactions = [.. batch.Transactions
+                        .OrderBy(transaction => transaction.Number)];
+        _display.DisplayTransactions(new(orderedTransactions, batch.SourceFileName));
     }
 }
