@@ -22,7 +22,7 @@ public class FinancialController
     /// per operation a front end can start. Front ends read this list and
     /// present the choices their own way; the option numbers identify the
     /// actions when a choice comes back.</summary>
-    public List<AppAction> AppActions { get; } =
+    public List<Option> AppActions { get; } =
     [
         new("Budget Options", "View current budgets", 1),
         new("Budget Options", "Update budgets", 2),
@@ -57,6 +57,20 @@ public class FinancialController
     public FinancialSnapshot GetSnapshot() =>
            SnapshotGenerator.GenerateSnapshot(_budgetManager.BudgetCategories, _transactionManager.LastUpload);
 
+    /// <summary>Builds one Option per budget category currently in memory:
+    /// the category's general classification as the heading, its name as
+    /// the label, and its option number. Built fresh on every call, so the
+    /// entries always match the live budget set.</summary>
+    public List<Option> GetBudgetOptions()
+    {
+        return [.. _budgetManager.BudgetCategories.Categories
+        .Select(category => new Option(
+            category.GeneralClassification,
+            category.Name,
+            category.OptionNumber
+        ))];
+    }
+
     /// <summary>Replaces the in-memory budgets and transactions with
     /// whatever the repositories have stored. When nothing is stored yet,
     /// the budgets side saves its defaults and the transactions side keeps
@@ -74,10 +88,11 @@ public class FinancialController
     public Transaction? FindTransaction(int transactionNumber) =>
         _transactionManager.FindByTransactionNumber(transactionNumber);
 
-    /// <summary>Finds a budget category by its menu option number.</summary>
-    /// <returns>The matching category, or null when no category has that
-    /// option number.</returns>
-    public BudgetCategory? FindCategory(int optionNumber) =>
+    /// <summary>Finds a budget category by its menu option number. Accepts
+    /// null so callers can pass a failed parse straight through.</summary>
+    /// <returns>The matching category, or null when the option number is
+    /// null or no category has it.</returns>
+    public BudgetCategory? FindCategory(int? optionNumber) =>
         _budgetManager.FindByOptionNumber(optionNumber);
 
     /// <summary>Assigns the given category's name to the given transaction;

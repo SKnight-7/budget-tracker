@@ -1,37 +1,50 @@
-using BudgetTracker.Ui;
+using BudgetTracker.Services;
 
 namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
-/// The console implementation of <see cref="IInput"/>: writes a prompt to
-/// the terminal and waits for a typed line. Its sibling
-/// <see cref="ConsoleDisplay"/> implements <see cref="IDisplay"/>; the two
-/// are separate classes because the two contracts are separate and the
-/// halves share nothing.
+/// The console implementation of <see cref="IInput"/>: writes each prompt
+/// to the terminal and reads a typed line back. The typed Gets build on
+/// GetString, so every entry arrives through the same read before the
+/// validation runs. Its sibling <see cref="ConsoleDisplay"/> implements
+/// <see cref="IDisplay"/>; the two are separate classes because the two
+/// contracts are separate and the halves share nothing.
 /// </summary>
 public class ConsoleInput : IInput
 {
     /// <inheritdoc/>
     /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
-    public string GetUserInput(string inputPrompt)
+    public string GetString(string inputPrompt)
     {
         Console.Write(inputPrompt);
         return Console.ReadLine() ?? "q";
     }
 
     /// <inheritdoc/>
-    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
-    public string GetOptionNumber(string optionNumberPrompt)
+    public int? GetIntIdentifier(string inputPrompt)
     {
-        Console.Write(optionNumberPrompt);
-        return Console.ReadLine() ?? "q";
+        string entry = GetString(inputPrompt);
+
+        if (entry.Equals("q", StringComparison.OrdinalIgnoreCase))
+            return IInput.QuitSignal;
+
+        int? parsedEntry = Parser.ParseInt(entry);
+        return parsedEntry > 0 ? parsedEntry : null;
     }
 
     /// <inheritdoc/>
-    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
-    public string GetFileName(string fileNamePrompt)
+    public decimal? GetBudgetAmount(string inputPrompt)
     {
-        Console.Write(fileNamePrompt);
-        return Console.ReadLine() ?? "q";
+        string entry = GetString(inputPrompt);
+
+        if (entry.Equals("q", StringComparison.OrdinalIgnoreCase))
+            return IInput.QuitSignal;
+
+        decimal? parsedEntry = Parser.ParseDecimal(entry);
+
+        if (parsedEntry is null || parsedEntry < 0 || parsedEntry != Math.Round(parsedEntry.Value, 2))
+            return null;
+
+        return parsedEntry;
     }
 }

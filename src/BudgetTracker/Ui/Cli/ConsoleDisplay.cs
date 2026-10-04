@@ -1,6 +1,4 @@
-using BudgetTracker.Controllers;
 using BudgetTracker.Models;
-using BudgetTracker.Ui;
 
 namespace BudgetTracker.Ui.Cli;
 
@@ -20,9 +18,12 @@ public class ConsoleDisplay : IDisplay
     }
 
     /// <inheritdoc/>
+    /// <remarks>Writes to the standard error stream, so when a user
+    /// redirects the program's output to a file, errors still appear on
+    /// screen.</remarks>
     public void DisplayError(string errorMessage)
     {
-        Console.WriteLine(errorMessage);
+        Console.Error.WriteLine(errorMessage);
     }
 
     /// <inheritdoc/>
@@ -32,7 +33,7 @@ public class ConsoleDisplay : IDisplay
     }
 
     /// <inheritdoc/>
-    public void DisplayMainMenu(List<AppAction> options, string menuTitle)
+    public void DisplayMainMenu(List<Option> options, string menuTitle)
     {
         Console.WriteLine(Menus.Generate(options, menuTitle));
     }
@@ -43,7 +44,7 @@ public class ConsoleDisplay : IDisplay
     /// explicit third argument here. IDisplay.DisplayBudgetMenu deliberately
     /// has no column parameter because no front end other than CLI
     /// arranges options into character columns.</remarks>
-    public void DisplayBudgetMenu(List<AppAction> options, string menuTitle)
+    public void DisplayBudgetMenu(List<Option> options, string menuTitle)
     {
         Console.WriteLine(Menus.GenerateColumned(options, menuTitle));
     }

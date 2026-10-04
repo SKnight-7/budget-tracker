@@ -1,9 +1,9 @@
-using BudgetTracker.Controllers;
+using BudgetTracker.Models;
 
 namespace BudgetTracker.Ui.Cli;
 
 /// <summary>
-/// Builds menu displays from AppAction entries.
+/// Builds menu displays from Option entries.
 /// </summary>
 public static class Menus
 {
@@ -14,19 +14,19 @@ public static class Menus
     private const int OptionPrefixWidth = 4;  // "NN: ", a number right-aligned to 2, then a colon and a space
 
     /// <summary>Builds a menu display: an underlined title, then options grouped by
-    /// general classification and ordered by option number.</summary>
+    /// heading and ordered by option number.</summary>
     /// <param name="options">The menu entries to display, in any order.</param>
     /// <param name="title">The heading shown underlined above the menu.</param>
     /// <returns>The formatted menu as a single string, ready to display.</returns>
     /// <remarks>Groups appear in order of their lowest option number.</remarks>
-    public static string Generate(List<AppAction> options, string title = "MENU")
+    public static string Generate(List<Option> options, string title = "MENU")
     {
         List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}"];
 
-        foreach (var group in options.OrderBy(o => o.OptionNumber).GroupBy(o => o.GeneralClassification))
+        foreach (var group in options.OrderBy(o => o.OptionNumber).GroupBy(o => o.Heading))
         {
             menuToDisplay.Add($"\n{group.Key}:");
-            foreach (AppAction option in group)
+            foreach (Option option in group)
             {
                 menuToDisplay.Add($"    {option.OptionNumber} - {option.Label}");
             }
@@ -36,7 +36,7 @@ public static class Menus
     }
 
     /// <summary>Builds a multi-column menu display: an underlined title, then one
-    /// card per general classification, arranged left to right in rows.</summary>
+    /// card per heading, arranged left to right in rows.</summary>
     /// <param name="options">The menu entries to display, in any order.</param>
     /// <param name="title">The heading shown underlined above the menu.</param>
     /// <param name="columnCount">How many cards stand side by side per row.</param>
@@ -44,13 +44,13 @@ public static class Menus
     /// <remarks>Cards appear in order of their lowest option number. Every column is
     /// the same fixed width (CardWidth) with a fixed gutter between columns, and
     /// option names wrap inside it onto indented continuation lines.</remarks>
-    public static string GenerateColumned(List<AppAction> options, string title = "MENU", int columnCount = 4)
+    public static string GenerateColumned(List<Option> options, string title = "MENU", int columnCount = 4)
     {
         List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}\n"];
 
         List<List<string>> cards = [.. options
             .OrderBy(o => o.OptionNumber)
-            .GroupBy(o => o.GeneralClassification)
+            .GroupBy(o => o.Heading)
             .Select(BuildCard)];
 
         foreach (var chunk in cards.Chunk(columnCount))
@@ -87,13 +87,13 @@ public static class Menus
         return lines;
     }
 
-    // One classification's entries as display lines: uppercased header first, then
+    // One heading's entries as display lines: uppercased header first, then
     // each option with its number; wrapped names continue on indented lines.
-    private static List<string> BuildCard(IGrouping<string, AppAction> group)
+    private static List<string> BuildCard(IGrouping<string, Option> group)
     {
         List<string> card = [group.Key.ToUpper()];
 
-        foreach (AppAction option in group)
+        foreach (Option option in group)
         {
             List<string> nameLines = WrapWords(option.Label, CardWidth - OptionPrefixWidth);
             card.Add($"{option.OptionNumber,2}: {nameLines[0]}");
