@@ -1,5 +1,6 @@
 using BudgetTracker.Controllers;
 using BudgetTracker.Models;
+using BudgetTracker.Infrastructure;
 
 namespace BudgetTracker.Ui.Cli;
 
@@ -48,7 +49,7 @@ public class InteractionLoop
                     break;
 
                 case "3":
-
+                    ImportTransactions();
                     break;
 
                 case "4":
@@ -115,6 +116,46 @@ public class InteractionLoop
                 _display.DisplayBudgets(_controller.GetSnapshot());
                 break;
             }
+        }
+    }
+
+    // Imports a bank file: tells the user where files must live, prompts
+    // for a filename (appending .csv when the extension is missing), and
+    // reprompts after a missing file or one that does not match the
+    // bank's layout. A successful import displays the updated budgets
+    // and returns to the main menu; 'q' returns without importing.
+    private void ImportTransactions()
+    {
+        _display.DisplayMessage(
+            $"Please enter the name of a CSV file located here: {FolderPaths.BankTransactions}\n"
+            + "or enter 'q' to return to the main menu.");
+        while (true)
+        {
+            string potentialFileName = _input.GetString("Filename: ");
+            if (potentialFileName.Equals("q", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            if (!potentialFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                potentialFileName = potentialFileName + ".csv";
+
+            try
+            {
+                if (!_controller.ImportBankFile(potentialFileName))
+                {
+                    _display.DisplayError(
+                        $"No file named '{potentialFileName}' was found in the BankTransactions folder.\n"
+                        + "Please try again, or enter 'q' to return to the main menu.");
+                    continue;
+                }
+            }
+            catch (InvalidDataException exception)
+            {
+                _display.DisplayError(exception.Message);
+                _display.DisplayError("Please try again, or enter 'q' to return to the main menu.");
+                continue;
+            }
+            _display.DisplayBudgets(_controller.GetSnapshot());
+            return;
         }
     }
 }
