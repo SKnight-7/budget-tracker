@@ -77,11 +77,12 @@ public class TransactionManager
         return true;
     }
 
-    /// <summary>Finds the transaction a user selected by transaction number.</summary>
-    /// <returns>The matching transaction, or null when no transaction in the
-    /// current batch has that number; the caller decides what a miss means
-    /// (typically: re-prompt).</returns>
-    public Transaction? FindByTransactionNumber(int transactionNumber) =>
+    /// <summary>Finds the transaction a user selected by transaction number.
+    /// Accepts null so callers can pass a failed parse straight through.</summary>
+    /// <returns>The matching transaction, or null when the number is null or
+    /// no transaction in the current batch has it; the caller decides what a
+    /// miss means (typically: re-prompt).</returns>
+    public Transaction? FindByTransactionNumber(int? transactionNumber) =>
         LastUpload.Transactions.FirstOrDefault(transaction => transaction.Number == transactionNumber);
 
     /// <summary>Sets a transaction's category and persists the whole batch in

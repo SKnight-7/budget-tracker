@@ -61,7 +61,7 @@ public class InteractionLoop
                     break;
 
                 case "6":
-
+                    RecategorizeTransactions();
                     break;
 
                 default:
@@ -178,5 +178,52 @@ public class InteractionLoop
         List<Transaction> orderedTransactions = [.. batch.Transactions
                         .OrderBy(transaction => transaction.Number)];
         _display.DisplayTransactions(new(orderedTransactions, batch.SourceFileName));
+    }
+
+    // Recategorizes transactions until the user quits: shows the current
+    // transactions grouped by category, prompts for a transaction number,
+    // then offers the budget menu for the new category; the controller call
+    // persists the change in the same step. The category view redisplays
+    // after each change, so the moved row doubles as confirmation. 'q'
+    // backs out one level at a time: category prompt to transaction
+    // prompt, transaction prompt to main menu.
+    private void RecategorizeTransactions()
+    {
+        while (true)
+        {
+            ViewTransactionsByCategory();
+            int? selection = _input.GetIntIdentifier("Enter transaction number or 'q' to exit: ");
+            if (selection == IInput.QuitSignal)
+                return;
+
+            Transaction? selectedTransaction = _controller.FindTransaction(selection);
+            if (selectedTransaction is null)
+            {
+                _display.DisplayError("Please select one of the transaction numbers shown.");
+                continue;
+            }
+
+            while (true)
+            {
+                _display.DisplayBudgetMenu(_controller.GetBudgetOptions(), "AVAILABLE CATEGORIES");
+                int? selectedOptionNumber = _input.GetIntIdentifier(
+                                            "Please select the new category.\n"
+                                            + "Enter the option number or 'q' to exit: ");
+
+                if (selectedOptionNumber == IInput.QuitSignal)
+                    break;
+
+                BudgetCategory? selectedCategory = _controller.FindCategory(selectedOptionNumber);
+
+                if (selectedCategory is null)
+                {
+                    _display.DisplayError("Please select from the available option numbers.");
+                    continue;
+                }
+
+                _controller.RecategorizeTransaction(selectedTransaction, selectedCategory);
+                break;
+            }
+        }
     }
 }

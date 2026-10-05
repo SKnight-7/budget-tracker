@@ -16,7 +16,10 @@ public interface ITransactionRepository
     /// what an empty start means is the caller's decision, not storage's.</returns>
     TransactionBatch? Load();
 
-    /// <summary>Stores the given batch, replacing whatever was stored before.</summary>
+    /// <summary>Stores the given batch, replacing whatever was stored before.
+    /// How the stored form is arranged, ordering included, is each
+    /// implementation's own decision, made and kept inside that
+    /// implementation.</summary>
     /// <param name="batch">The transactions to store, together with the name
     /// of the bank file they came from.</param>
     void Save(TransactionBatch batch);

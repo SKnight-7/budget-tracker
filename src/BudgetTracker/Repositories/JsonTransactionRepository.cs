@@ -98,12 +98,18 @@ public class JsonTransactionRepository : ITransactionRepository
     /// <remarks>Creates the StatePersistence folder when it doesn't exist yet,
     /// and rewrites the whole file every time: one indented JSON document,
     /// with the source file name stored once at the top and never repeated
-    /// per transaction.</remarks>
+    /// per transaction, and the transactions in transaction number order,
+    /// whatever order the batch arrives in. Serializing an ordered copy also
+    /// reruns the batch constructor's checks, so every save re-proves the
+    /// batch sound before writing it.</remarks>
     public void Save(TransactionBatch batch)
     {
+        TransactionBatch orderedBatch = new([.. batch.Transactions
+                        .OrderBy(transaction => transaction.Number)], batch.SourceFileName);
+
         Directory.CreateDirectory(FolderPaths.StatePersistence);
 
-        string batchAsString = JsonSerializer.Serialize(batch, IndentedJson);
+        string batchAsString = JsonSerializer.Serialize(orderedBatch, IndentedJson);
         File.WriteAllText(PersistenceFilePath, batchAsString);
     }
 }

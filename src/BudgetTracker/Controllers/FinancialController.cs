@@ -82,10 +82,11 @@ public class FinancialController
         _transactionManager.LoadSavedTransactions();
     }
 
-    /// <summary>Finds a transaction in the batch currently in memory.</summary>
-    /// <returns>The matching transaction, or null when no transaction in
-    /// the current batch has that number.</returns>
-    public Transaction? FindTransaction(int transactionNumber) =>
+    /// <summary>Finds a transaction in the batch currently in memory.
+    /// Accepts null so callers can pass a failed parse straight through.</summary>
+    /// <returns>The matching transaction, or null when the number is null
+    /// or no transaction in the current batch has it.</returns>
+    public Transaction? FindTransaction(int? transactionNumber) =>
         _transactionManager.FindByTransactionNumber(transactionNumber);
 
     /// <summary>Finds a budget category by its menu option number. Accepts

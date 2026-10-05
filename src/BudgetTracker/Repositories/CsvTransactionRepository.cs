@@ -155,7 +155,8 @@ public class CsvTransactionRepository : ITransactionRepository
     /// <remarks>Creates the StatePersistence folder when it doesn't exist yet,
     /// and rewrites the whole file every time: headers first (taken from the
     /// property names via nameof, so they can't drift), then one row per
-    /// transaction: dates as yyyy-MM-dd, amounts as plain two-decimal
+    /// transaction in transaction number order, whatever order the batch
+    /// arrives in: dates as yyyy-MM-dd, amounts as plain two-decimal
     /// numbers, and the source file written on every row.</remarks>
     public void Save(TransactionBatch batch)
     {
@@ -178,7 +179,7 @@ public class CsvTransactionRepository : ITransactionRepository
             csv.WriteField(header);
         csv.NextRecord();
 
-        foreach (Transaction transaction in batch.Transactions)
+        foreach (Transaction transaction in batch.Transactions.OrderBy(transaction => transaction.Number))
         {
             csv.WriteField(transaction.Number);
             csv.WriteField(transaction.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));

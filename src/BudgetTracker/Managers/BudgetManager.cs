@@ -62,14 +62,8 @@ public class BudgetManager
     /// <returns>The matching category, or null when the number is null or no
     /// category has it; the caller decides what a miss means (typically:
     /// re-prompt).</returns>
-    public BudgetCategory? FindByOptionNumber(int? optionNumber)
-    {
-        if (optionNumber is null)
-            return null;
-
-        return
-            BudgetCategories.Categories.FirstOrDefault(category => category.OptionNumber == optionNumber);
-    }
+    public BudgetCategory? FindByOptionNumber(int? optionNumber) =>
+        BudgetCategories.Categories.FirstOrDefault(category => category.OptionNumber == optionNumber);
 
     /// <summary>Sets a category's budgeted amount and persists all budgets in
     /// one call, so no budget change can ever exist unsaved.</summary>
