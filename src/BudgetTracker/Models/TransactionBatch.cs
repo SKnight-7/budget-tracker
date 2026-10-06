@@ -9,8 +9,9 @@ namespace BudgetTracker.Models;
 public class TransactionBatch
 {
     /// <summary>Recorded as the batch's source when the given name is missing
-    /// or blank: an honest label, never a made-up file name.</summary>
-    private const string UnknownSourceName = "unknown";
+    /// or blank: an honest label, never a made-up file name. Public so a
+    /// display can recognize a batch that never came from a real file.</summary>
+    public const string UnknownSourceName = "unknown";
 
     /// <summary>The transactions in this batch. Assigned at construction and
     /// never reassigned; guaranteed free of duplicate transaction numbers.</summary>

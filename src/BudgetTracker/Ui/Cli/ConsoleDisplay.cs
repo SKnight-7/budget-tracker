@@ -61,8 +61,13 @@ public class ConsoleDisplay : IDisplay
         List<List<string>> incomeRows = BuildTableRows(snapshot.IncomeRows);
         List<List<string>> expenseRows = BuildTableRows(snapshot.ExpenseRows);
 
-        string header = $"{TextLayout.Underline(displayTitle)}\n"
-                      + $"Based on transactions from: {snapshot.SourceFileName}\n"
+        string sourceLine = string.Equals(
+                snapshot.SourceFileName, TransactionBatch.UnknownSourceName, StringComparison.OrdinalIgnoreCase)
+            ? "No transactions uploaded."
+            : $"Based on transactions from: {snapshot.SourceFileName}";
+
+        string header = $"\n{TextLayout.Underline(displayTitle)}\n"
+                      + $"{sourceLine}\n"
                       + "\n";
 
         // Both row lists empty here means every category was skipped as
@@ -72,7 +77,7 @@ public class ConsoleDisplay : IDisplay
         // deliberate, because the source file is still true and useful.)
         if (incomeRows.Count == 0 && expenseRows.Count == 0)
         {
-            Console.WriteLine(header + "There are no budgets to display.\n");
+            Console.WriteLine(header + "There are no budgets to display.");
             return;
         }
 
@@ -117,8 +122,7 @@ public class ConsoleDisplay : IDisplay
                         + $"{incomeSummary}\n"
                         + "\n"
                         + $"{Tables.Generate(expenseHeaders, expenseRows, alignments)}\n"
-                        + $"{expenseSummary}\n"
-                        + "\n";
+                        + expenseSummary;
 
         Console.WriteLine(textToDisplay);
     }
@@ -141,8 +145,13 @@ public class ConsoleDisplay : IDisplay
                 transaction.Category,
             })];
 
-        Console.WriteLine($"{TextLayout.Underline(displayTitle)}\n"
-                        + $"Transactions from: {batch.SourceFileName}\n"
+        string sourceLine = string.Equals(
+                batch.SourceFileName, TransactionBatch.UnknownSourceName, StringComparison.OrdinalIgnoreCase)
+            ? "No transactions uploaded."
+            : $"Transactions from: {batch.SourceFileName}";
+
+        Console.WriteLine($"\n{TextLayout.Underline(displayTitle)}\n"
+                        + $"{sourceLine}\n"
                         + "\n"
                         + Tables.Generate(headers, rows, alignments));
     }

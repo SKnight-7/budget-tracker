@@ -4,15 +4,13 @@ A console budget tracker in C# / .NET: load bank transactions from CSV, categori
 them automatically by keyword, set budget amounts per category, and see where the
 money actually went.
 
-**Status: work in progress.** This is a ground-up re-architecture of
+**Status: complete and running.** This is a ground-up re-architecture of
 [budgets-app-modular](https://github.com/SKnight-7/budgets-app-modular), my Python
 final project for Harvard's CS50P. It was originally submitted as a single file,
-later modularized in Python, and is now being rebuilt in C# with the layered design
+later modularized in Python, and has now been rebuilt in C# with the layered design
 I didn't yet have the experience to give it the first time.
 
-## Current state
-
-Built:
+## What's inside
 
 - **Models.** `Transaction` and `BudgetCategory` validate in their property setters,
   so an invalid object cannot be constructed. String properties follow one rule:
@@ -83,12 +81,15 @@ Built:
 - **Two front-end interfaces, split by capability.** `IDisplay` holds the display
   methods; every one receives data, never pre-formatted text, so each implementing
   class does its own formatting and a web front end could implement it. `IInput`
-  holds the prompt methods, which only front ends that can ask and wait can
+  holds the input methods, which only front ends that can ask and wait can
   implement; a web server cannot, which is why the two interfaces are separate.
-  `ConsoleDisplay` and `ConsoleInput` implement them, one class per interface,
-  with every display built: the budgets view (two tables with aligned summary
-  blocks beneath them, the unbudgeted amount beside the expense totals), the
-  transactions view, and the two menus.
+  `GetString` returns the typed line raw; the typed Gets (`GetIntIdentifier`,
+  `GetBudgetAmount`) validate at the boundary and signal one of three outcomes:
+  a valid value, a named quit signal, or null for an invalid entry, which callers
+  answer with a reprompt. `ConsoleDisplay` and `ConsoleInput` implement the two
+  interfaces, one class per interface, with every display built: the budgets view
+  (two tables with aligned summary blocks beneath them, the unbudgeted amount
+  beside the expense totals), the transactions view, and the two menus.
 - **FinancialController.** The operations layer, where budgets and transactions
   cross. It receives both managers through its constructor, exposes finders that
   return the matching object or null so the interaction loop can validate each
@@ -96,14 +97,26 @@ Built:
   categorize every transaction against the live budget set, save. No Ui type
   appears in the file, so any front end could drive the same operations.
 
-In progress:
-
 - **The interaction loop.** The menu conversation that ties input, controller,
-  and displays together, and the Program.cs wiring where the concrete
-  implementations are chosen and handed in.
+  and displays together. Six flows, one per menu option: view budgets, update
+  budget amounts, import a bank file, two transaction views (each handing the
+  display a sorted copy, never reordering the live batch), and recategorize
+  transactions. Every flow follows the same grammar: raw entries are validated
+  at the input boundary, misses reprompt with instructions, and 'q' backs out
+  one level at a time, from any prompt all the way to exiting the program. At
+  startup, damaged save files are reported per side and the app continues with
+  that side's fallback (default budgets, an empty transaction list), and a
+  startup check compares the controller's action catalog against the actions
+  the loop dispatches, refusing to start on a mismatch rather than showing a
+  menu entry that does nothing.
+- **Program.cs.** The composition root: construction in dependency order, and
+  the single place concrete implementation names appear, so swapping storage
+  formats or front ends is a one-line change here and nowhere else.
 
-Running the app today prints the greeting; the storage layer waits on the
-interactive loop to be exercised.
+A sample bank export is included in `BankTransactions/`, so the import flow can
+be tried immediately: run the app, choose option 3, and enter
+`sample_checking_october2026`. The tables are wide; a terminal around 120
+columns shows them without wrapping.
 
 ## Architecture notes
 
@@ -112,9 +125,9 @@ interactive loop to be exercised.
 - Data folders are split by ownership: `StatePersistence/` holds the app's own
   files; `BankTransactions/` holds user-provided bank downloads
 - Validation follows a layering rule: models guard their invariants and throw on
-  violations; repositories clean or reject external data at the boundary; user-input
-  handling (when the interactive layer lands) re-prompts instead of throwing, with
-  `Parser` as its foundation
+  violations; repositories clean or reject external data at the boundary;
+  user-input handling re-prompts instead of throwing, with `Parser` as its
+  foundation
 - Dependencies are handed in through constructors, never constructed internally
 
 ## Built with

@@ -1,0 +1,319 @@
+{
+  "Categories": [
+    {
+      "GeneralClassification": "Income",
+      "Name": "Paycheck",
+      "Keywords": [
+        "payroll"
+      ],
+      "OptionNumber": 1,
+      "BudgetedAmount": 4769.18,
+      "SearchOrder": 1
+    },
+    {
+      "GeneralClassification": "Income",
+      "Name": "Other Income",
+      "Keywords": [
+        "cashout"
+      ],
+      "OptionNumber": 2,
+      "BudgetedAmount": 0,
+      "SearchOrder": 2
+    },
+    {
+      "GeneralClassification": "Monthly Household",
+      "Name": "Mortgage \u0026 Rent",
+      "Keywords": [
+        "apartments",
+        "mortgage"
+      ],
+      "OptionNumber": 3,
+      "BudgetedAmount": 1400,
+      "SearchOrder": 3
+    },
+    {
+      "GeneralClassification": "Monthly Household",
+      "Name": "Utilities",
+      "Keywords": [
+        "utility",
+        "gas",
+        "electric",
+        "water",
+        "smud",
+        "pge"
+      ],
+      "OptionNumber": 4,
+      "BudgetedAmount": 80,
+      "SearchOrder": 4
+    },
+    {
+      "GeneralClassification": "Monthly Household",
+      "Name": "Phone",
+      "Keywords": [
+        "verizon",
+        "metropcs",
+        "mobile"
+      ],
+      "OptionNumber": 5,
+      "BudgetedAmount": 60,
+      "SearchOrder": 5
+    },
+    {
+      "GeneralClassification": "Monthly Household",
+      "Name": "Internet, Cable, Satellite",
+      "Keywords": [
+        "internet",
+        "comcast",
+        "xfinity",
+        "at\u0026t",
+        "cable",
+        "satellite"
+      ],
+      "OptionNumber": 6,
+      "BudgetedAmount": 60,
+      "SearchOrder": 6
+    },
+    {
+      "GeneralClassification": "Food \u0026 Dining",
+      "Name": "Groceries",
+      "Keywords": [
+        "safeway",
+        "kroger",
+        "aldi",
+        "publix",
+        "meijer",
+        "piggly",
+        "albertson",
+        "costco",
+        "trader joe",
+        "co-op",
+        "food",
+        "market",
+        "grocery"
+      ],
+      "OptionNumber": 7,
+      "BudgetedAmount": 300,
+      "SearchOrder": 7
+    },
+    {
+      "GeneralClassification": "Food \u0026 Dining",
+      "Name": "Eating Out",
+      "Keywords": [
+        "mcdonald",
+        "starbuck",
+        "peets",
+        "chipotle",
+        "subway",
+        "panera",
+        "dunkin",
+        "taco",
+        "pizza",
+        "wings",
+        "burger",
+        "steak",
+        "coffee",
+        "yogurt"
+      ],
+      "OptionNumber": 8,
+      "BudgetedAmount": 350,
+      "SearchOrder": 8
+    },
+    {
+      "GeneralClassification": "Travel \u0026 Transport",
+      "Name": "Car (Payment, Gas, Repair, Ride Share, Tolls, Parking)",
+      "Keywords": [
+        "dealership",
+        "auto",
+        "uber",
+        "lyft",
+        "toll",
+        "parking",
+        "shell",
+        "chevron",
+        "exxonmobil",
+        "bp",
+        "gas"
+      ],
+      "OptionNumber": 9,
+      "BudgetedAmount": 0,
+      "SearchOrder": 9
+    },
+    {
+      "GeneralClassification": "Travel \u0026 Transport",
+      "Name": "Public Transit",
+      "Keywords": [
+        "transit",
+        " rt "
+      ],
+      "OptionNumber": 10,
+      "BudgetedAmount": 30,
+      "SearchOrder": 10
+    },
+    {
+      "GeneralClassification": "Travel \u0026 Transport",
+      "Name": "Trips \u0026 Travel",
+      "Keywords": [
+        "hotel",
+        "motel",
+        "airline"
+      ],
+      "OptionNumber": 11,
+      "BudgetedAmount": 0,
+      "SearchOrder": 14
+    },
+    {
+      "GeneralClassification": "Health \u0026 Fitness",
+      "Name": "Medical",
+      "Keywords": [
+        "hospital",
+        "doctor",
+        "kaiser",
+        "medical",
+        "insurance",
+        "wellness",
+        "pharm",
+        "rx"
+      ],
+      "OptionNumber": 12,
+      "BudgetedAmount": 15,
+      "SearchOrder": 17
+    },
+    {
+      "GeneralClassification": "Health \u0026 Fitness",
+      "Name": "Gym \u0026 Other Fitness",
+      "Keywords": [
+        "fitness",
+        "gym",
+        "pilates",
+        "dance",
+        "running"
+      ],
+      "OptionNumber": 13,
+      "BudgetedAmount": 0,
+      "SearchOrder": 13
+    },
+    {
+      "GeneralClassification": "Financial",
+      "Name": "Pay Loans \u0026 Credit Cards",
+      "Keywords": [
+        "bank",
+        "loan",
+        "capital one",
+        "merrick",
+        "hsbc",
+        "american express",
+        "visa",
+        "mastercard",
+        "student ln",
+        "synchrony",
+        " cc "
+      ],
+      "OptionNumber": 14,
+      "BudgetedAmount": 2000,
+      "SearchOrder": 11
+    },
+    {
+      "GeneralClassification": "Shopping",
+      "Name": "Home Improvement",
+      "Keywords": [
+        "lowe",
+        "home",
+        "hardware"
+      ],
+      "OptionNumber": 15,
+      "BudgetedAmount": 0,
+      "SearchOrder": 15
+    },
+    {
+      "GeneralClassification": "Shopping",
+      "Name": "Other Shopping",
+      "Keywords": [
+        "amazon",
+        "amzn",
+        "ebay",
+        "macy",
+        "nordstrom",
+        "target",
+        "walmart",
+        "outlet",
+        "google"
+      ],
+      "OptionNumber": 16,
+      "BudgetedAmount": 200,
+      "SearchOrder": 999
+    },
+    {
+      "GeneralClassification": "Other",
+      "Name": "Self Care",
+      "Keywords": [
+        "spa ",
+        " hair",
+        "nail",
+        "salon",
+        "barber",
+        "massage",
+        "beauty"
+      ],
+      "OptionNumber": 17,
+      "BudgetedAmount": 0,
+      "SearchOrder": 16
+    },
+    {
+      "GeneralClassification": "Other",
+      "Name": "Pet Care",
+      "Keywords": [
+        "chewy",
+        "animal",
+        "vet",
+        "kitty",
+        "cat ",
+        "dog",
+        "hound",
+        "pup"
+      ],
+      "OptionNumber": 18,
+      "BudgetedAmount": 274.18,
+      "SearchOrder": 12
+    },
+    {
+      "GeneralClassification": "Other",
+      "Name": "Laundry",
+      "Keywords": [
+        "csc"
+      ],
+      "OptionNumber": 19,
+      "BudgetedAmount": 0,
+      "SearchOrder": 19
+    },
+    {
+      "GeneralClassification": "Other",
+      "Name": "Entertainment",
+      "Keywords": [
+        "netflix",
+        "hulu",
+        "disney",
+        "video",
+        "spotify",
+        "audible",
+        "cinemark",
+        "amc",
+        "theater",
+        "theatre",
+        "playstation",
+        "nintendo",
+        "xbox",
+        "steam",
+        "nexus mods",
+        "game",
+        "subscription",
+        "youtube",
+        "channel",
+        "television",
+        "tv"
+      ],
+      "OptionNumber": 20,
+      "BudgetedAmount": 0,
+      "SearchOrder": 20
+    }
+  ]
+}

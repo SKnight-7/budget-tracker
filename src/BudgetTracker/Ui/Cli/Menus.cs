@@ -35,7 +35,7 @@ public static class Menus
         return string.Join("\n", menuToDisplay) + "\n";
     }
 
-    /// <summary>Builds a multi-column menu display: an underlined title, then one
+    /// <summary>Builds a multi-column menu display: a plain title, then one
     /// card per heading, arranged left to right in rows.</summary>
     /// <param name="options">The menu entries to display, in any order.</param>
     /// <param name="title">The heading shown underlined above the menu.</param>
@@ -46,7 +46,7 @@ public static class Menus
     /// option names wrap inside it onto indented continuation lines.</remarks>
     public static string GenerateColumned(List<Option> options, string title = "MENU", int columnCount = 4)
     {
-        List<string> menuToDisplay = [$"\n\n{TextLayout.Underline(title)}\n"];
+        List<string> menuToDisplay = [$"\n\n{title}\n"];
 
         List<List<string>> cards = [.. options
             .OrderBy(o => o.OptionNumber)

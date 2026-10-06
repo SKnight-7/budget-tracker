@@ -1,0 +1,145 @@
+{
+  "Transactions": [
+    {
+      "Number": 1,
+      "Date": "2025-08-01",
+      "Amount": 2500.00,
+      "Description": "PAYROLL DIRECT DEPOSIT SAMPLE EMPLOYER CO",
+      "Category": "Paycheck"
+    },
+    {
+      "Number": 2,
+      "Date": "2025-08-01",
+      "Amount": -1400.00,
+      "Description": "CHECK 1001: CHECK # 1001",
+      "Category": "Mortgage \u0026 Rent"
+    },
+    {
+      "Number": 3,
+      "Date": "2025-08-03",
+      "Amount": -62.45,
+      "Description": "PURCHASE AUTHORIZED ON 08/02 SAFEWAY 1234 SACRAMENTO CA S000000000001 CARD 0000",
+      "Category": "Groceries"
+    },
+    {
+      "Number": 4,
+      "Date": "2025-08-05",
+      "Amount": -15.99,
+      "Description": "RECURRING PAYMENT AUTHORIZED ON 08/05 NETFLIX.COM CA S000000000002 CARD 0000",
+      "Category": "Entertainment"
+    },
+    {
+      "Number": 5,
+      "Date": "2025-08-07",
+      "Amount": -4.75,
+      "Description": "PURCHASE AUTHORIZED ON 08/07 STARBUCKS SACRAMENTO CA S000000000003 CARD 0000",
+      "Category": "Eating Out"
+    },
+    {
+      "Number": 6,
+      "Date": "2025-08-08",
+      "Amount": -145.20,
+      "Description": "SMUD WEB_PAY AUG 25 000000000000001 SAMPLE USER",
+      "Category": "Utilities"
+    },
+    {
+      "Number": 7,
+      "Date": "2025-08-09",
+      "Amount": -48.00,
+      "Description": "PURCHASE AUTHORIZED ON 08/09 CHEVRON 0234 SACRAMENTO CA S000000000004 CARD 0000",
+      "Category": "Car (Payment, Gas, Repair, Ride Share, Tolls, Parking)"
+    },
+    {
+      "Number": 8,
+      "Date": "2025-08-10",
+      "Amount": -85.00,
+      "Description": "KAISER PERMANENTE WEB PMT 2025-08-09 000000000002 SAMPLE USER",
+      "Category": "Medical"
+    },
+    {
+      "Number": 9,
+      "Date": "2025-08-11",
+      "Amount": -35.00,
+      "Description": "SAMPLECITY FITNESS GYM MEMBERSHIP 08/11 CARD 0000",
+      "Category": "Gym \u0026 Other Fitness"
+    },
+    {
+      "Number": 10,
+      "Date": "2025-08-14",
+      "Amount": -67.89,
+      "Description": "PURCHASE AUTHORIZED ON 08/14 GROCERY OUTLET 0987 SACRAMENTO CA S000000000005 CARD 0000",
+      "Category": "Groceries"
+    },
+    {
+      "Number": 11,
+      "Date": "2025-08-15",
+      "Amount": 125.00,
+      "Description": "VENMO CASHOUT 250815 0000000000001 SAMPLE USER",
+      "Category": "Other Income"
+    },
+    {
+      "Number": 12,
+      "Date": "2025-08-16",
+      "Amount": -18.50,
+      "Description": "PURCHASE AUTHORIZED ON 08/16 ANIMAL SUPPLY CO SACRAMENTO CA S000000000006 CARD 0000",
+      "Category": "Pet Care"
+    },
+    {
+      "Number": 13,
+      "Date": "2025-08-18",
+      "Amount": -230.00,
+      "Description": "PURCHASE AUTHORIZED ON 08/18 ANIMAL HOSPITAL EMERGENCY SACRAMENTO CA S000000000007 CARD 0000",
+      "Category": "Pet Care"
+    },
+    {
+      "Number": 14,
+      "Date": "2025-08-20",
+      "Amount": -8.99,
+      "Description": "AMAZON PRIME VIDEO ONLINE 000000000003 SAMPLE USER",
+      "Category": "Entertainment"
+    },
+    {
+      "Number": 15,
+      "Date": "2025-08-22",
+      "Amount": -52.10,
+      "Description": "PURCHASE AUTHORIZED ON 08/22 TARGET T-1234 SACRAMENTO CA S000000000008 CARD 0000",
+      "Category": "Other Shopping"
+    },
+    {
+      "Number": 16,
+      "Date": "2025-08-24",
+      "Amount": -12.00,
+      "Description": "PURCHASE AUTHORIZED ON 08/24 CHIPOTLE 0456 SACRAMENTO CA S000000000009 CARD 0000",
+      "Category": "Eating Out"
+    },
+    {
+      "Number": 17,
+      "Date": "2025-08-26",
+      "Amount": -89.00,
+      "Description": "VERIZON WIRELESS PMT 0000000000004 SAMPLE USER",
+      "Category": "Phone"
+    },
+    {
+      "Number": 18,
+      "Date": "2025-08-28",
+      "Amount": -50.00,
+      "Description": "COMCAST XFINITY INTERNET 0000000000005 SAMPLE USER",
+      "Category": "Internet, Cable, Satellite"
+    },
+    {
+      "Number": 19,
+      "Date": "2025-08-29",
+      "Amount": -350.00,
+      "Description": "SYNCHRONY BANK CC PYMT AUG 29 000000000000006 SAMPLE USER",
+      "Category": "Pay Loans \u0026 Credit Cards"
+    },
+    {
+      "Number": 20,
+      "Date": "2025-08-30",
+      "Amount": -28.00,
+      "Description": "PURCHASE AUTHORIZED ON 08/30 UBER TRIP HELP.UBER.COM CA S000000000010 CARD 0000",
+      "Category": "Car (Payment, Gas, Repair, Ride Share, Tolls, Parking)"
+    }
+  ],
+  "SourceFileName": "sample_checking_august2025.csv"
+}

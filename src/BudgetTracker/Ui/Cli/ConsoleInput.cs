@@ -13,11 +13,16 @@ namespace BudgetTracker.Ui.Cli;
 public class ConsoleInput : IInput
 {
     /// <inheritdoc/>
-    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by returning "q".</remarks>
+    /// <remarks>Treats end-of-input (Ctrl+Z on Windows) as a quit request by
+    /// returning "q". Trims leading and trailing whitespace from the entry,
+    /// and writes a blank line after it, so whatever prints next stands
+    /// apart from the typed line.</remarks>
     public string GetString(string inputPrompt)
     {
         Console.Write(inputPrompt);
-        return Console.ReadLine() ?? "q";
+        string entry = Console.ReadLine()?.Trim() ?? "q";
+        Console.WriteLine();
+        return entry;
     }
 
     /// <inheritdoc/>

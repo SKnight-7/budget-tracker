@@ -9,12 +9,14 @@ public class InteractionLoop
     private readonly FinancialController _controller;
     private readonly IDisplay _display;
     private readonly IInput _input;
+    private readonly bool _enableWhimsy;
 
-    public InteractionLoop(FinancialController controller, IDisplay display, IInput input)
+    public InteractionLoop(FinancialController controller, IDisplay display, IInput input, bool enableWhimsy)
     {
         _controller = controller;
         _display = display;
         _input = input;
+        _enableWhimsy = enableWhimsy;
     }
 
     public void Run()
@@ -60,7 +62,7 @@ public class InteractionLoop
             _display.DisplayError("Continuing with an empty transaction list.");
         }
 
-        _display.DisplayWhimsy(true);
+        _display.DisplayWhimsy(_enableWhimsy);
         while (true)
         {
             _display.DisplayMainMenu(_controller.AppActions, "MAIN MENU");
@@ -114,7 +116,7 @@ public class InteractionLoop
         _display.DisplayBudgets(_controller.GetSnapshot());
         while (true)
         {
-            _display.DisplayBudgetMenu(_controller.GetBudgetOptions(), "AVAILABLE CATEGORIES");
+            _display.DisplayBudgetMenu(_controller.GetBudgetOptions(), "AVAILABLE CATEGORIES:");
             int? selectedOptionNumber = _input.GetIntIdentifier(
                 "Please select a budget to update.\nEnter the option number or 'q' to exit: ");
 
@@ -133,14 +135,14 @@ public class InteractionLoop
             {
                 decimal? selectedAmount = _input.GetBudgetAmount(
                     $"Please enter a budget amount for {selectedCategory.Name} in the format #####.##\n"
-                    + "or 'q' to choose a different category:\n");
+                    + "or 'q' to choose a different category: ");
 
                 if (selectedAmount == IInput.QuitSignal)
                     break;
 
                 if (selectedAmount is null)
                 {
-                    _display.DisplayError("Invalid entry, please try again.");
+                    _display.DisplayError("Please enter a positive number with no currency symbol and up to two decimal places.");
                     continue;
                 }
 
@@ -163,7 +165,7 @@ public class InteractionLoop
             + "or enter 'q' to return to the main menu.");
         while (true)
         {
-            string potentialFileName = _input.GetString("Filename: ");
+            string potentialFileName = _input.GetString("\nFilename: ");
             if (potentialFileName.Equals("q", StringComparison.OrdinalIgnoreCase))
                 return;
 
@@ -237,7 +239,7 @@ public class InteractionLoop
 
             while (true)
             {
-                _display.DisplayBudgetMenu(_controller.GetBudgetOptions(), "AVAILABLE CATEGORIES");
+                _display.DisplayBudgetMenu(_controller.GetBudgetOptions(), "AVAILABLE CATEGORIES:");
                 int? selectedOptionNumber = _input.GetIntIdentifier(
                                             "Please select the new category.\n"
                                             + "Enter the option number or 'q' to exit: ");
