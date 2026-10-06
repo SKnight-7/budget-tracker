@@ -19,13 +19,45 @@ public class InteractionLoop
 
     public void Run()
     {
+        // The actions this loop was built to handle: the switch below
+        // dispatches exactly these, so this list, that switch, and the
+        // controller's catalog must always change together.
+        List<Option> expectedActions =
+        [
+            new("Budget Options", "View current budgets", 1),
+            new("Budget Options", "Update budgets", 2),
+            new("Transaction Options", "Choose a CSV transaction file to load", 3),
+            new("Transaction Options", "View transactions by category", 4),
+            new("Transaction Options", "View transactions in original order", 5),
+            new("Transaction Options", "Recategorize transactions", 6),
+        ];
+
+        // The startup tripwire: the program refuses to start when the
+        // controller offers actions this loop was not built to dispatch.
+        // Option is a record, so SequenceEqual compares values, not
+        // references, and both sides arrive ordered by option number.
+        if (!_controller.AppActions.SequenceEqual(expectedActions.OrderBy(action => action.OptionNumber)))
+            throw new InvalidOperationException("The controller's action catalog no longer matches what this loop was built to handle.\n"
+            + "Update the switch in .Run() and the expectedActions list together with the controller's catalog.");
+
         try
         {
-            _controller.LoadSavedData();
+            _controller.LoadSavedBudgets();
         }
-        catch
+        catch (InvalidDataException exception)
         {
-            _display.DisplayError("placeholder");
+            _display.DisplayError(exception.Message);
+            _display.DisplayError("Continuing with the default budgets.");
+        }
+
+        try
+        {
+            _controller.LoadSavedTransactions();
+        }
+        catch (InvalidDataException exception)
+        {
+            _display.DisplayError(exception.Message);
+            _display.DisplayError("Continuing with an empty transaction list.");
         }
 
         _display.DisplayWhimsy(true);

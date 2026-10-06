@@ -18,11 +18,9 @@ public class FinancialController
     private readonly BudgetManager _budgetManager;
     private readonly TransactionManager _transactionManager;
 
-    /// <summary>The catalog of actions this application offers, one entry
-    /// per operation a front end can start. Front ends read this list and
-    /// present the choices their own way; the option numbers identify the
-    /// actions when a choice comes back.</summary>
-    public List<Option> AppActions { get; } =
+    // The declared catalog; AppActions hands it out ordered. Entries here
+    // may stand in any order without affecting anything.
+    private readonly List<Option> _appActions =
     [
         new("Budget Options", "View current budgets", 1),
         new("Budget Options", "Update budgets", 2),
@@ -44,6 +42,17 @@ public class FinancialController
     {
         _budgetManager = budgetManager;
         _transactionManager = transactionManager;
+    }
+
+    /// <summary>The catalog of actions this application offers, one entry
+    /// per operation a front end can start, handed out ordered by option
+    /// number regardless of how the catalog is declared: a fresh ordered
+    /// copy is built on every read. Front ends read this list and present
+    /// the choices their own way; the option numbers identify the actions
+    /// when a choice comes back.</summary>
+    public List<Option> AppActions
+    {
+        get => [.. _appActions.OrderBy(action => action.OptionNumber)];
     }
 
     /// <summary>Returns the batch of transactions currently in memory, for display.
@@ -71,16 +80,20 @@ public class FinancialController
         ))];
     }
 
-    /// <summary>Replaces the in-memory budgets and transactions with
-    /// whatever the repositories have stored. When nothing is stored yet,
-    /// the budgets side saves its defaults and the transactions side keeps
-    /// its empty batch. Anything a repository throws while reading, such
-    /// as a damaged file, travels up unchanged.</summary>
-    public void LoadSavedData()
-    {
-        _budgetManager.LoadSavedBudgets();
-        _transactionManager.LoadSavedTransactions();
-    }
+    /// <summary>Replaces the in-memory budgets with whatever the repository
+    /// has stored. When nothing is stored yet, the defaults already in
+    /// memory are saved instead, seeding storage. Anything the repository
+    /// throws while reading, such as a damaged file, travels up unchanged;
+    /// the defaults stay in memory either way, so a failed load leaves a
+    /// usable budget set.</summary>
+    public void LoadSavedBudgets() => _budgetManager.LoadSavedBudgets();
+
+    /// <summary>Replaces the in-memory transactions with whatever the
+    /// repository has stored. When nothing is stored yet, the empty batch
+    /// stays. Anything the repository throws while reading, such as a
+    /// damaged file, travels up unchanged; the empty batch stays in memory
+    /// either way, so a failed load leaves a usable state.</summary>
+    public void LoadSavedTransactions() => _transactionManager.LoadSavedTransactions();
 
     /// <summary>Finds a transaction in the batch currently in memory.
     /// Accepts null so callers can pass a failed parse straight through.</summary>
