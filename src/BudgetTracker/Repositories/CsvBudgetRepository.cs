@@ -49,20 +49,24 @@ public class CsvBudgetRepository : IBudgetRepository
     }
 
     /// <inheritdoc/>
-    /// <remarks>Checks the data while reading the file: a row with no category
-    /// name is rejected, and empty keyword entries (produced when the keywords
-    /// cell is blank or has stray '|' separators) are dropped rather than
-    /// loaded, because an empty keyword would match every description. A file
-    /// with headers but no rows loads as null, the same as no file at all,
-    /// so the manager's defaults policy applies; a completely blank file is
-    /// treated as damage instead, because Save always writes headers.</remarks>
-    /// <exception cref="InvalidDataException">Thrown when a row has no category
-    /// name; when two or more rows share a category name (compared ignoring
-    /// case; every duplicate and its rows are reported in one message); or
-    /// when a row cannot be read as budget data at all, such as when there is
-    /// a missing column, a word where a number belongs, or a malformed line.
-    /// In that last case the original error stays attached as the
-    /// InnerException.</exception>
+    /// <remarks>Checks the data while reading the file, collecting every
+    /// fixable problem instead of stopping at the first one: rows with no
+    /// category name, values the file or the model refuses, and duplicate
+    /// category names are all gathered row by row and reported together in
+    /// one message, so a hand-edited file can be repaired in one pass.
+    /// Empty keyword entries (produced when the keywords cell is blank or
+    /// has stray '|' separators) are dropped rather than loaded, because an
+    /// empty keyword would match every description. A file with headers but
+    /// no rows loads as null, the same as no file at all, so the manager's
+    /// defaults policy applies; a completely blank file is treated as
+    /// damage instead, because Save always writes headers.</remarks>
+    /// <exception cref="InvalidDataException">Thrown when any row has a
+    /// fixable problem (a missing category name, a value that cannot be
+    /// read or that the model refuses, a duplicate category name), with
+    /// every problem in the file listed in one message. Also thrown, alone,
+    /// when the file is structurally unreadable (a torn or malformed line,
+    /// or a blank file with no header row); in that case the original
+    /// error stays attached as the InnerException.</exception>
     public BudgetSet? Load()
     {
         if (!File.Exists(PersistenceFilePath))
@@ -80,47 +84,65 @@ public class CsvBudgetRepository : IBudgetRepository
             csv.ReadHeader();    // memorize the column names
 
             Dictionary<string, List<int>> rowsByName = new(StringComparer.OrdinalIgnoreCase);
+            List<string> problemReports = [];
 
             while (csv.Read())   // step onto each data row until the file runs out
             {
                 rowNumber++;
                 string name = csv.GetField<string>(nameof(BudgetCategory.Name)) ?? "";
                 if (name.Length == 0)
-                    throw new InvalidDataException($"{PersistenceFileName} row {rowNumber} has no category name.");
+                {
+                    problemReports.Add($"row {rowNumber} has no category name.");
+                    continue;
+                }
 
                 if (!rowsByName.ContainsKey(name))
                     rowsByName[name] = [];
 
                 rowsByName[name].Add(rowNumber);
 
-                loaded.Add(new(
-                    csv.GetField<string>(nameof(BudgetCategory.GeneralClassification)) ?? "",
-                    name,
-                    [.. (csv.GetField<string>(nameof(BudgetCategory.Keywords)) ?? "").Split('|', StringSplitOptions.RemoveEmptyEntries)],
-                    csv.GetField<int>(nameof(BudgetCategory.OptionNumber)),
-                    csv.GetField<decimal>(nameof(BudgetCategory.BudgetedAmount)),
-                    csv.GetField<decimal>(nameof(BudgetCategory.SearchOrder))));
+                // Each row's read-and-construct is guarded alone, so one bad
+                // row becomes a report line and the walk continues. The model's
+                // constructor stays the single authority on what is valid; the
+                // repository only records who it rejected.
+                try
+                {
+                    loaded.Add(new(
+                        csv.GetField<string>(nameof(BudgetCategory.GeneralClassification)) ?? "",
+                        name,
+                        [.. (csv.GetField<string>(nameof(BudgetCategory.Keywords)) ?? "").Split('|', StringSplitOptions.RemoveEmptyEntries)],
+                        csv.GetField<int>(nameof(BudgetCategory.OptionNumber)),
+                        csv.GetField<decimal>(nameof(BudgetCategory.BudgetedAmount)),
+                        csv.GetField<decimal>(nameof(BudgetCategory.SearchOrder))));
+                }
+                catch (ArgumentException exception)
+                {
+                    // The model's own refusals carry useful words; quote them.
+                    problemReports.Add($"row {rowNumber}: {exception.Message}");
+                }
+                catch (CsvHelperException)
+                {
+                    // CsvHelper's messages dump reader internals; summarize instead.
+                    problemReports.Add(
+                        $"row {rowNumber} could not be read as budget data (a missing column, or a word where a number belongs).");
+                }
             }
-
-            List<string> duplicateReports = [];
 
             foreach (KeyValuePair<string, List<int>> entry in rowsByName)
             {
                 if (entry.Value.Count > 1)
-                    duplicateReports.Add(
+                    problemReports.Add(
                         $"multiple versions of '{entry.Key}' were found at the following rows: {string.Join(", ", entry.Value)}.");
             }
 
-            if (duplicateReports.Count > 0)
+            if (problemReports.Count > 0)
                 throw new InvalidDataException(
-                    $"{PersistenceFileName} has duplicate category names:\n{string.Join("\n", duplicateReports)}");
+                    $"{PersistenceFileName} could not be loaded. Every problem found is listed, so one fixing pass covers them all:\n{string.Join("\n", problemReports)}");
         }
 
-        // Catches CsvHelper's own errors (bad value, missing column, malformed
-        // line) and the model's validation throws (a negative amount, a zero
-        // option number), all of which know what went wrong but not where.
-        // The nameless-row InvalidDataException above is neither, so it flies
-        // through untouched, as it already carries its row number.
+        // Only structural damage reaches here now: a blank file with no
+        // header, or a line so torn CsvHelper cannot step onto it. Row-level
+        // value problems are collected above and never escape the loop.
         catch (Exception exception) when (exception is CsvHelperException or ArgumentException)
         {
             throw new InvalidDataException(

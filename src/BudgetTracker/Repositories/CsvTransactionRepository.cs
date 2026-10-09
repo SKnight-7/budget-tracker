@@ -49,24 +49,26 @@ public class CsvTransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc/>
-    /// <remarks>Checks the data while reading the file: every duplicate
-    /// transaction number is found and reported together in one message, so a
-    /// damaged file can be fixed in one pass. All named source files must
-    /// agree: Save only ever writes one source per file, so two different
-    /// names mean the file no longer tells one story. Rows with a blank
-    /// source are tolerated: the batch takes its name from the rows that
-    /// have one, or records it as "unknown" when none do. A missing or
-    /// unreadable number needs no separate check, because reading the field
-    /// as an int refuses to parse it, and the wrapper below adds the row
-    /// number. A file with headers but no rows loads as null, the same as
-    /// no file at all; a completely blank file is treated as damage
-    /// instead, because Save always writes headers.</remarks>
-    /// <exception cref="InvalidDataException">Thrown when rows carry two
-    /// different source file names; when two or more rows share a
-    /// transaction number; or when a row cannot be read as transaction data
-    /// at all, such as when there is a missing column, a word where a number
-    /// belongs, or a malformed line. In that last case the original error
-    /// stays attached as the InnerException.</exception>
+    /// <remarks>Checks the data while reading the file, collecting every
+    /// fixable problem instead of stopping at the first one: values the
+    /// file or the model refuses and duplicate transaction numbers are all
+    /// gathered row by row and reported together in one message, so a
+    /// hand-edited file can be repaired in one pass. All named source files
+    /// must agree: Save only ever writes one source per file, so two
+    /// different names mean the file no longer tells one story, and that is
+    /// reported alone, immediately. Rows with a blank source are tolerated:
+    /// the batch takes its name from the rows that have one, or records it
+    /// as "unknown" when none do. A file with headers but no rows loads as
+    /// null, the same as no file at all; a completely blank file is treated
+    /// as damage instead, because Save always writes headers.</remarks>
+    /// <exception cref="InvalidDataException">Thrown when any row has a
+    /// fixable problem (a value that cannot be read or that the model
+    /// refuses, a duplicate transaction number), with every problem in the
+    /// file listed in one message. Thrown alone when rows carry two
+    /// different source file names, or when the file is structurally
+    /// unreadable (a torn or malformed line, or a blank file with no header
+    /// row); in that last case the original error stays attached as the
+    /// InnerException.</exception>
     public TransactionBatch? Load()
     {
         if (!File.Exists(PersistenceFilePath))
@@ -85,6 +87,7 @@ public class CsvTransactionRepository : ITransactionRepository
             csv.ReadHeader();    // memorize the column names
 
             Dictionary<int, List<int>> rowsByTransactionNumber = [];
+            List<string> problemReports = [];
 
             while (csv.Read())   // step onto each data row until the file runs out
             {
@@ -105,41 +108,59 @@ public class CsvTransactionRepository : ITransactionRepository
                         $"Multiple source files detected in {PersistenceFileName}; " +
                         $"review the file to investigate, or delete it to start over.");
 
-                int transactionNumber = csv.GetField<int>(nameof(Transaction.Number));
+                // Each row's read-and-construct is guarded alone, so one bad
+                // row becomes a report line and the walk continues. The model's
+                // constructor stays the single authority on what is valid; the
+                // repository only records who it rejected.
+                try
+                {
+                    int transactionNumber = csv.GetField<int>(nameof(Transaction.Number));
 
-                if (!rowsByTransactionNumber.ContainsKey(transactionNumber))
-                    rowsByTransactionNumber[transactionNumber] = [];
+                    if (!rowsByTransactionNumber.ContainsKey(transactionNumber))
+                        rowsByTransactionNumber[transactionNumber] = [];
 
-                rowsByTransactionNumber[transactionNumber].Add(rowNumber);
+                    rowsByTransactionNumber[transactionNumber].Add(rowNumber);
 
-                loaded.Add(new(
-                    transactionNumber,
-                    csv.GetField<DateOnly>(nameof(Transaction.Date)),
-                    csv.GetField<decimal>(nameof(Transaction.Amount)),
-                    csv.GetField<string>(nameof(Transaction.Description)) ?? "",
-                    csv.GetField<string>(nameof(Transaction.Category)) ?? Transaction.UnbudgetedCategoryName));
+                    loaded.Add(new(
+                        transactionNumber,
+                        csv.GetField<DateOnly>(nameof(Transaction.Date)),
+                        csv.GetField<decimal>(nameof(Transaction.Amount)),
+                        csv.GetField<string>(nameof(Transaction.Description)) ?? "",
+                        csv.GetField<string>(nameof(Transaction.Category)) ?? Transaction.UnbudgetedCategoryName));
+                }
+                catch (ArgumentException exception)
+                {
+                    // The model's own refusals carry useful words; quote them.
+                    problemReports.Add($"row {rowNumber}: {exception.Message}");
+                }
+                // FormatException joins because CsvHelper's DateOnly converter
+                // lets the date parser's own throw escape unwrapped.
+                catch (Exception exception) when (exception is CsvHelperException or FormatException)
+                {
+                    // CsvHelper's messages dump reader internals; summarize instead.
+                    problemReports.Add(
+                        $"row {rowNumber} could not be read as transaction data (a missing column, or a value of the wrong kind).");
+                }
             }
-
-            List<string> duplicateReports = [];
 
             foreach (KeyValuePair<int, List<int>> entry in rowsByTransactionNumber)
             {
                 if (entry.Value.Count > 1)
-                    duplicateReports.Add(
+                    problemReports.Add(
                         $"multiple entries with transaction number '{entry.Key}' were found at the following rows: {string.Join(", ", entry.Value)}.");
             }
 
-            if (duplicateReports.Count > 0)
+            if (problemReports.Count > 0)
                 throw new InvalidDataException(
-                    $"{PersistenceFileName} has duplicate transaction numbers:\n{string.Join("\n", duplicateReports)}");
+                    $"{PersistenceFileName} could not be loaded. Every problem found is listed, so one fixing pass covers them all:\n{string.Join("\n", problemReports)}");
         }
 
-        // Catches CsvHelper's own errors (bad value, missing column, malformed
-        // line) and the model's validation throws (a negative transaction
-        // number), all of which know what went wrong but not where. The
-        // InvalidDataExceptions thrown above are neither, so they fly through
-        // untouched, as each already tells its own story.
-        catch (Exception exception) when (exception is CsvHelperException or ArgumentException)
+        // Only structural damage reaches here now: a blank file with no
+        // header, or a line so torn CsvHelper cannot step onto it. Row-level
+        // value problems are collected above and never escape the loop; the
+        // InvalidDataExceptions thrown above fly through untouched, as each
+        // already tells its own story.
+        catch (Exception exception) when (exception is CsvHelperException or ArgumentException or FormatException)
         {
             throw new InvalidDataException(
                 $"{PersistenceFileName} row {rowNumber} could not be read as transaction data.", exception);
